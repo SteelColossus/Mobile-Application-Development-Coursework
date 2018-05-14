@@ -1,0 +1,25 @@
+<resources>
+    <string name="app_name">MyShoppingList</string>
+    <string name="list_name_default">List Name</string>
+    <string name="num_items_default">No. of items</string>
+    <string name="date_default">Date</string>
+    <string name="product_name_default">Product Name</string>
+    <string name="price_default">Price</string>
+    <string name="product_image_default">Product Image</string>
+    <string name="no_lists_added_message">You haven\'t added any lists yet.\nTry adding a new one by clicking the plus button down below!</string>
+    <string name="search_hint">Search products</string>
+    <string name="search_title">Search</string>
+    <string name="scanner_title">Scan</string>
+    <string name="add_list_button_text">Finish</string>
+    <string name="dialog_shoppinglist_name">Name</string>
+    <string name="shopping_list_name_format_default">Shopping List %d</string>
+    <string name="dialog_name_shopping_list_title">Name your shopping list…</string>
+    <string name="dialog_save_shopping_list_title">Save this shopping list?</string>
+    <string name="no_search_results_found_message">No results were found.</string>
+    <string name="no_scan_results_found_message">No products were found matching that barcode.</string>
+    <string name="bought_overlay_default">Bought Overlay</string>
+    <string name="remove_title">Remove</string>
+    <string name="change_item_title">Change item</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+</resources>
