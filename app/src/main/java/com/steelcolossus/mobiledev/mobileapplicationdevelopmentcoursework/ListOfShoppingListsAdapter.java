@@ -1,7 +1,6 @@
 package com.steelcolossus.mobiledev.mobileapplicationdevelopmentcoursework;
 
 import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -94,7 +93,8 @@ public class ListOfShoppingListsAdapter extends RecyclerView.Adapter<ListOfShopp
             {
                 PopupMenu popupMenu = new PopupMenu(v.getContext(), v);
                 popupMenu.getMenuInflater().inflate(R.menu.shoppinglist_context_menu, popupMenu.getMenu());
-                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener()
+                {
                     @Override
                     public boolean onMenuItemClick(MenuItem item)
                     {
@@ -122,44 +122,34 @@ public class ListOfShoppingListsAdapter extends RecyclerView.Adapter<ListOfShopp
         return dataset.size();
     }
 
-    // TODO: Change this to take shopping list ID instead of name
-    public void changeItem(String name, ShoppingList shoppingList)
-    {
-        int index = -1;
-
-        for (int i = 0; i < dataset.size(); i++)
-        {
-            if (dataset.get(i).getName().equals(name))
-            {
-                index = i;
-                break;
-            }
-        }
-
-        if (index >= 0)
-        {
-            dataset.set(index, shoppingList);
-            notifyItemChanged(index);
-        }
-    }
-
-    public void addItem(ShoppingList shoppingList)
+    private void addItem(ShoppingList shoppingList)
     {
         dataset.add(shoppingList);
         notifyItemInserted(getItemCount() - 1);
     }
 
-    public void addItemToStart(ShoppingList shoppingList)
+    private void removeItem(int index)
     {
-        dataset.add(0, shoppingList);
-        notifyItemInserted(0);
-    }
-
-    public void removeItem(ShoppingList shoppingList)
-    {
-        int index = dataset.indexOf(shoppingList);
         dataset.remove(index);
         notifyItemRemoved(index);
+    }
+
+    public void clearItems()
+    {
+        while (this.dataset.size() > 0)
+        {
+            removeItem(0);
+        }
+    }
+
+    public void setItems(ArrayList<ShoppingList> dataset)
+    {
+        clearItems();
+
+        for (ShoppingList shoppingList : dataset)
+        {
+            addItem(shoppingList);
+        }
     }
 
     // A view holder used to store the elements of the recycler view

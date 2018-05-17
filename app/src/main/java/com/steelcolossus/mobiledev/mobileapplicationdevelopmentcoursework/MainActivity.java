@@ -7,9 +7,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -21,17 +26,15 @@ import android.widget.EditText;
 import com.steelcolossus.mobiledev.mobileapplicationdevelopmentcoursework.provider.ShoppingListContract;
 
 import java.util.ArrayList;
-import java.util.Date;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<ArrayList<ShoppingList>>
 {
-    private static final int NEW_SHOPPING_LIST_REQUEST = 1;
-    private static final int EXISTING_SHOPPING_LIST_REQUEST = 2;
-
+    public static final int LOADER_ID = 1;
     public static final String INTENT_TAG_SHOPPING_LIST_IS_NEW = "new";
     public static final String INTENT_TAG_SHOPPING_LIST_NAME = "name";
     public static final String INTENT_TAG_SHOPPING_LIST_DATA = "shoppingList";
-
+    private static final int NEW_SHOPPING_LIST_REQUEST = 1;
+    private static final int EXISTING_SHOPPING_LIST_REQUEST = 2;
     private RecyclerView recyclerView;
     private ListOfShoppingListsAdapter adapter;
 
@@ -43,8 +46,6 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        ArrayList<ShoppingList> dataset = loadShoppingListsFromContentProvider();
-
         recyclerView = findViewById(R.id.listOfShoppingListsRecyclerView);
 
         // Set that the elements of the recycler view will not change in size
@@ -55,7 +56,7 @@ public class MainActivity extends AppCompatActivity
         final Context context = this;
 
         // Set up the adapter
-        adapter = new ListOfShoppingListsAdapter(dataset);
+        adapter = new ListOfShoppingListsAdapter(new ArrayList<ShoppingList>());
         adapter.setOnClickFunction(new ShoppingListFunction()
         {
             @Override
@@ -68,14 +69,15 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        adapter.setMenuFunction(new ShoppingListContextMenuFunction() {
+        adapter.setMenuFunction(new ShoppingListContextMenuFunction()
+        {
             @Override
             public boolean onMenuItemClick(int menuItemId, View view, ShoppingList shoppingList)
             {
                 switch (menuItemId)
                 {
                     case R.id.remove:
-                        adapter.removeItem(shoppingList);
+                        deleteShoppingListFromDatabase(shoppingList);
                         Snackbar.make(view, shoppingList.getName() + " removed", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                         return true;
                     default:
@@ -117,7 +119,7 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        updateListVisibility(adapter.getItemCount());
+        getSupportLoaderManager().initLoader(LOADER_ID, null, this);
     }
 
     @Override
@@ -131,8 +133,7 @@ public class MainActivity extends AppCompatActivity
             {
                 ShoppingList result = data.getParcelableExtra(ShoppingListActivity.INTENT_TAG_SHOPPING_LIST_DATA);
 
-                updateListVisibility(adapter.getItemCount() + 1);
-                adapter.addItemToStart(result);
+                addShoppingListToDatabase(result);
             }
         }
         else if (requestCode == EXISTING_SHOPPING_LIST_REQUEST)
@@ -141,7 +142,7 @@ public class MainActivity extends AppCompatActivity
             {
                 ShoppingList result = data.getParcelableExtra(ShoppingListActivity.INTENT_TAG_SHOPPING_LIST_DATA);
 
-                adapter.changeItem(result.getName(), result);
+                changeShoppingListInDatabase(result);
             }
         }
     }
@@ -153,42 +154,61 @@ public class MainActivity extends AppCompatActivity
         saveShoppingListsWithContentProvider(adapter.getDataset());
     }
 
-    private ArrayList<ShoppingList> loadShoppingListsFromContentProvider()
+    private void deleteShoppingListFromDatabase(ShoppingList shoppingList)
     {
         ContentResolver contentResolver = getContentResolver();
-        ArrayList<ShoppingList> dataset = new ArrayList<>();
 
-        Cursor shoppingListCursor = contentResolver.query(ShoppingListContract.ShoppingList.CONTENT_URI, ShoppingListContract.ShoppingList.PROJECTION_ALL, null, null, ShoppingListContract.ShoppingList.SORT_ORDER_DEFAULT);
+        Cursor cursor = contentResolver.query(ShoppingListContract.ShoppingList.CONTENT_URI, new String[] { ShoppingListContract.ShoppingList._ID }, ShoppingListContract.ShoppingList.DATE + " = ?", new String[] { Long.toString(shoppingList.getDate().getTime()) }, ShoppingListContract.ShoppingList.SORT_ORDER_DEFAULT);
 
-        if (shoppingListCursor != null)
+        if (cursor != null)
         {
-            while (shoppingListCursor.moveToNext())
-            {
-                Cursor productCursor = contentResolver.query(ShoppingListContract.Product.CONTENT_URI, ShoppingListContract.Product.PROJECTION_ALL, "SHOPPINGLIST_ID = ?", new String[] { Integer.toString(shoppingListCursor.getInt(0)) }, ShoppingListContract.Product.SORT_ORDER_DEFAULT);
-                ArrayList<ShoppingListItem> items = new ArrayList<>();
+            cursor.moveToFirst();
+            String id = Integer.toString(cursor.getInt(0));
 
-                if (productCursor != null)
-                {
-                    while (productCursor.moveToNext())
-                    {
-                        ShoppingListItem item = new ShoppingListItem(productCursor.getInt(1), productCursor.getString(2), productCursor.getString(3), productCursor.getFloat(4), productCursor.getString(5));
-                        item.setSearchQuery(productCursor.getString(6));
-                        item.setBought(productCursor.getInt(7) == 1);
+            contentResolver.delete(ShoppingListContract.Product.CONTENT_URI, ShoppingListContract.Product.SHOPPINGLIST_ID + " = ?", new String[] { id });
+            contentResolver.delete(ShoppingListContract.ShoppingList.CONTENT_URI, ShoppingListContract.ShoppingList._ID + " = ?", new String[] { id });
 
-                        items.add(item);
-                    }
-
-                    productCursor.close();
-                }
-
-                ShoppingList shoppingList = new ShoppingList(shoppingListCursor.getString(1), new Date(shoppingListCursor.getLong(2)), items);
-                dataset.add(shoppingList);
-            }
-
-            shoppingListCursor.close();
+            cursor.close();
         }
+    }
 
-        return dataset;
+    private void addShoppingListToDatabase(ShoppingList shoppingList)
+    {
+        ContentResolver contentResolver = getContentResolver();
+
+        ContentValues newShoppingList = new ContentValues();
+
+        newShoppingList.put(ShoppingListContract.ShoppingList.NAME, shoppingList.getName());
+        newShoppingList.put(ShoppingListContract.ShoppingList.DATE, shoppingList.getDate().getTime());
+
+        Uri shoppingListUri = contentResolver.insert(ShoppingListContract.ShoppingList.CONTENT_URI, newShoppingList);
+
+        if (shoppingListUri != null)
+        {
+            ArrayList<ShoppingListItem> items = shoppingList.getItems();
+
+            for (ShoppingListItem item : items)
+            {
+                ContentValues newProduct = new ContentValues();
+
+                newProduct.put(ShoppingListContract.Product.TPNB, item.getTpnb());
+                newProduct.put(ShoppingListContract.Product.NAME, item.getName());
+                newProduct.put(ShoppingListContract.Product.DEPARTMENT, item.getDepartment());
+                newProduct.put(ShoppingListContract.Product.PRICE, item.getPrice());
+                newProduct.put(ShoppingListContract.Product.IMAGE_URL, item.getImageUrl());
+                newProduct.put(ShoppingListContract.Product.SEARCH_QUERY, item.getSearchQuery());
+                newProduct.put(ShoppingListContract.Product.BOUGHT, item.isBought());
+                newProduct.put(ShoppingListContract.Product.SHOPPINGLIST_ID, Integer.parseInt(shoppingListUri.getLastPathSegment()));
+
+                contentResolver.insert(ShoppingListContract.Product.CONTENT_URI, newProduct);
+            }
+        }
+    }
+
+    private void changeShoppingListInDatabase(ShoppingList shoppingList)
+    {
+        deleteShoppingListFromDatabase(shoppingList);
+        addShoppingListToDatabase(shoppingList);
     }
 
     private void saveShoppingListsWithContentProvider(ArrayList<ShoppingList> dataset)
@@ -198,40 +218,11 @@ public class MainActivity extends AppCompatActivity
         contentResolver.delete(ShoppingListContract.Product.CONTENT_URI, null, null);
         contentResolver.delete(ShoppingListContract.ShoppingList.CONTENT_URI, null, null);
 
-        int j = 0;
-
         for (int i = 0; i < dataset.size(); i++)
         {
             ShoppingList shoppingList = dataset.get(i);
 
-            ContentValues newShoppingList = new ContentValues();
-
-            newShoppingList.put(ShoppingListContract.ShoppingList._ID, i + 1);
-            newShoppingList.put(ShoppingListContract.ShoppingList.NAME, shoppingList.getName());
-            newShoppingList.put(ShoppingListContract.ShoppingList.DATE, shoppingList.getDate().getTime());
-
-            contentResolver.insert(ShoppingListContract.ShoppingList.CONTENT_URI, newShoppingList);
-
-            ArrayList<ShoppingListItem> items = shoppingList.getItems();
-
-            for (ShoppingListItem item : items)
-            {
-                ContentValues newProduct = new ContentValues();
-
-                newProduct.put(ShoppingListContract.Product._ID, j + 1);
-                newProduct.put(ShoppingListContract.Product.TPNB, item.getTpnb());
-                newProduct.put(ShoppingListContract.Product.NAME, item.getName());
-                newProduct.put(ShoppingListContract.Product.DEPARTMENT, item.getDepartment());
-                newProduct.put(ShoppingListContract.Product.PRICE, item.getPrice());
-                newProduct.put(ShoppingListContract.Product.IMAGE_URL, item.getImageUrl());
-                newProduct.put(ShoppingListContract.Product.SEARCH_QUERY, item.getSearchQuery());
-                newProduct.put(ShoppingListContract.Product.BOUGHT, item.isBought());
-                newProduct.put(ShoppingListContract.Product.SHOPPINGLIST_ID, i + 1);
-
-                contentResolver.insert(ShoppingListContract.Product.CONTENT_URI, newProduct);
-
-                j++;
-            }
+            addShoppingListToDatabase(shoppingList);
         }
     }
 
@@ -239,5 +230,26 @@ public class MainActivity extends AppCompatActivity
     {
         findViewById(R.id.noListsTextView).setVisibility(itemCount > 0 ? View.INVISIBLE : View.VISIBLE);
         recyclerView.setVisibility(itemCount > 0 ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    @NonNull
+    @Override
+    public Loader<ArrayList<ShoppingList>> onCreateLoader(int id, @Nullable Bundle args)
+    {
+        return new ShoppingListLoader(this);
+    }
+
+    @Override
+    public void onLoadFinished(@NonNull Loader<ArrayList<ShoppingList>> loader, ArrayList<ShoppingList> data)
+    {
+        adapter.setItems(data);
+        updateListVisibility(adapter.getItemCount());
+    }
+
+    @Override
+    public void onLoaderReset(@NonNull Loader<ArrayList<ShoppingList>> loader)
+    {
+        adapter.clearItems();
+        updateListVisibility(adapter.getItemCount());
     }
 }
