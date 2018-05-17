@@ -6,7 +6,7 @@
     <string name="product_name_default">Product Name</string>
     <string name="price_default">Price</string>
     <string name="product_image_default">Product Image</string>
-    <string name="no_lists_added_message">You haven\'t added any lists yet.\nTry adding a new one by clicking the plus button down below!</string>
+    <string name="no_lists_added_message">You haven\'t added any lists yet.\nTry adding a new one by clicking the add button down below!</string>
     <string name="search_hint">Search products</string>
     <string name="search_title">Search</string>
     <string name="scanner_title">Scan</string>
@@ -22,4 +22,5 @@
     <string name="change_item_title">Change item</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="user_guide">User Guide</string>
 </resources>
