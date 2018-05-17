@@ -93,6 +93,8 @@ public class ShoppingListActivity extends AppCompatActivity
         adapter = new ShoppingListAdapter(shoppingList.getItems(), isNew);
         recyclerView.setAdapter(adapter);
 
+        updateListVisibility();
+
         final Context context = this;
 
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -125,6 +127,7 @@ public class ShoppingListActivity extends AppCompatActivity
                 {
                     case R.id.remove:
                         adapter.removeItem(shoppingListItem);
+                        updateListVisibility();
                         Snackbar.make(view, shoppingListItem.getName() + " removed", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                         return true;
                     case R.id.changeItem:
@@ -162,6 +165,8 @@ public class ShoppingListActivity extends AppCompatActivity
                 ShoppingListItem result = data.getParcelableExtra(SearchProductsActivity.INTENT_TAG_PRODUCT);
 
                 adapter.addItem(result);
+
+                updateListVisibility();
             }
         }
         else if (requestCode == CHANGE_PRODUCT_REQUEST)
@@ -235,6 +240,13 @@ public class ShoppingListActivity extends AppCompatActivity
         });
 
         return false;
+    }
+
+    private void updateListVisibility()
+    {
+        int itemCount = adapter.getItemCount();
+        findViewById(R.id.noItemsTextView).setVisibility(itemCount > 0 ? View.INVISIBLE : View.VISIBLE);
+        findViewById(R.id.shoppingListRecyclerView).setVisibility(itemCount > 0 ? View.VISIBLE : View.INVISIBLE);
     }
 
     private void showSaveShoppingListDialog(final BackNavigationCallback backNavigationCallback)

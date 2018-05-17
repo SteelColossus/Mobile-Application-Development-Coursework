@@ -26,7 +26,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 
-import com.steelcolossus.mobiledev.mobileapplicationdevelopmentcoursework.barcode.IntentIntegrator;
 import com.steelcolossus.mobiledev.mobileapplicationdevelopmentcoursework.provider.ShoppingListContract;
 
 import java.util.ArrayList;
@@ -231,8 +230,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         addShoppingListToDatabase(shoppingList);
     }
 
-    private void updateListVisibility(int itemCount)
+    private void updateListVisibility()
     {
+        int itemCount = adapter.getItemCount();
         findViewById(R.id.noListsTextView).setVisibility(itemCount > 0 ? View.INVISIBLE : View.VISIBLE);
         recyclerView.setVisibility(itemCount > 0 ? View.VISIBLE : View.INVISIBLE);
     }
@@ -248,13 +248,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public void onLoadFinished(@NonNull Loader<ArrayList<ShoppingList>> loader, ArrayList<ShoppingList> data)
     {
         adapter.setItems(data);
-        updateListVisibility(adapter.getItemCount());
+        updateListVisibility();
     }
 
     @Override
     public void onLoaderReset(@NonNull Loader<ArrayList<ShoppingList>> loader)
     {
         adapter.clearItems();
-        updateListVisibility(adapter.getItemCount());
+        updateListVisibility();
     }
 }
