@@ -22,23 +22,23 @@ import java.util.Date;
 interface BackNavigationCallback
 {
     void onSaveUnnecessary();
+
     void onShoppingListSaved();
+
     void onShoppingListNotSaved();
 }
 
 public class ShoppingListActivity extends AppCompatActivity
 {
+    public static final String INTENT_TAG_SHOPPING_LIST_DATA = MainActivity.INTENT_TAG_SHOPPING_LIST_DATA;
     private static final int CHOOSE_PRODUCT_REQUEST = 1;
     private static final int CHANGE_PRODUCT_REQUEST = 2;
+    private static final String INSTANCE_STATE_TAG_SHOPPING_LIST = INTENT_TAG_SHOPPING_LIST_DATA;
+    private static final String INSTANCE_STATE_TAG_INITIAL_SHOPPING_LIST = INSTANCE_STATE_TAG_SHOPPING_LIST + "Initial";
     private ShoppingListAdapter adapter;
     private ShoppingList initialShoppingList;
     private ShoppingList shoppingList;
     private boolean isNew;
-
-    public static final String INTENT_TAG_SHOPPING_LIST_DATA = MainActivity.INTENT_TAG_SHOPPING_LIST_DATA;
-
-    private static final String INSTANCE_STATE_TAG_SHOPPING_LIST = INTENT_TAG_SHOPPING_LIST_DATA;
-    private static final String INSTANCE_STATE_TAG_INITIAL_SHOPPING_LIST = INSTANCE_STATE_TAG_SHOPPING_LIST + "Initial";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -116,7 +116,8 @@ public class ShoppingListActivity extends AppCompatActivity
             }
         });
 
-        adapter.setMenuFunction(new ShoppingListItemContextMenuFunction() {
+        adapter.setMenuFunction(new ShoppingListItemContextMenuFunction()
+        {
             @Override
             public boolean onMenuItemClick(int menuItemId, View view, ShoppingListItem shoppingListItem)
             {
@@ -187,7 +188,8 @@ public class ShoppingListActivity extends AppCompatActivity
     @Override
     public void onBackPressed()
     {
-        showSaveShoppingListDialog(new BackNavigationCallback() {
+        showSaveShoppingListDialog(new BackNavigationCallback()
+        {
             @Override
             public void onSaveUnnecessary()
             {
@@ -211,7 +213,8 @@ public class ShoppingListActivity extends AppCompatActivity
     @Override
     public boolean onSupportNavigateUp()
     {
-        showSaveShoppingListDialog(new BackNavigationCallback() {
+        showSaveShoppingListDialog(new BackNavigationCallback()
+        {
             @Override
             public void onSaveUnnecessary()
             {

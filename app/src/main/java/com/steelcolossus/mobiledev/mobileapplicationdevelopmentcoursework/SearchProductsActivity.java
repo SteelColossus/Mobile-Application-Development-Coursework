@@ -20,9 +20,9 @@ import android.widget.Toast;
 
 import com.steelcolossus.mobiledev.mobileapplicationdevelopmentcoursework.api.ProductDataCallback;
 import com.steelcolossus.mobiledev.mobileapplicationdevelopmentcoursework.api.ProductDataItem;
+import com.steelcolossus.mobiledev.mobileapplicationdevelopmentcoursework.api.ProductQuery;
 import com.steelcolossus.mobiledev.mobileapplicationdevelopmentcoursework.api.ProductQueryCallback;
 import com.steelcolossus.mobiledev.mobileapplicationdevelopmentcoursework.api.ProductQueryItem;
-import com.steelcolossus.mobiledev.mobileapplicationdevelopmentcoursework.api.ProductQuery;
 import com.steelcolossus.mobiledev.mobileapplicationdevelopmentcoursework.api.TescoRequestHandler;
 import com.steelcolossus.mobiledev.mobileapplicationdevelopmentcoursework.barcode.IntentIntegrator;
 import com.steelcolossus.mobiledev.mobileapplicationdevelopmentcoursework.barcode.IntentResult;
@@ -36,23 +36,17 @@ interface MenuCompletedCallback
 
 public class SearchProductsActivity extends AppCompatActivity
 {
+    public static final String INTENT_TAG_PRODUCT = "product";
+    private static final String INSTANCE_STATE_TAG_DATASET = "dataset";
+    private static final String INSTANCE_STATE_TAG_SEARCH_TEXT = "searchText";
     private TescoRequestHandler requestHandler;
     private ProductAdapter productAdapter;
-
     private ProgressBar progressBar;
     private RecyclerView recyclerView;
     private SearchView searchView;
-
     private MenuCompletedCallback menuCompletedCallback = null;
-
     private String searchQuery;
-
     private int itemTpnbToReplace = -1;
-
-    public static final String INTENT_TAG_PRODUCT = "product";
-
-    private static final String INSTANCE_STATE_TAG_DATASET = "dataset";
-    private static final String INSTANCE_STATE_TAG_SEARCH_TEXT = "searchText";
 
     @Override
     protected void onCreate(Bundle savedInstanceState)

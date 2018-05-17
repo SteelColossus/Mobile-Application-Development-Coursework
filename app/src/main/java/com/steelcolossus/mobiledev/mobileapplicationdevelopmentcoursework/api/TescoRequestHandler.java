@@ -11,16 +11,17 @@ import java.util.HashMap;
 
 public class TescoRequestHandler
 {
-    private static final String SUBSCRIPTION_KEY = "ef5dd24ba6784aad87cea01e1ca68264";
     public static final HashMap<String, String> defaultHeaders;
+    private static final String SUBSCRIPTION_KEY = "ef5dd24ba6784aad87cea01e1ca68264";
     private static final int QUERY_LIMIT = 50;
-    private RequestQueue requestQueue;
 
     static
     {
         defaultHeaders = new HashMap<>();
         defaultHeaders.put("Ocp-Apim-Subscription-Key", TescoRequestHandler.SUBSCRIPTION_KEY);
     }
+
+    private RequestQueue requestQueue;
 
     public TescoRequestHandler(Context context)
     {

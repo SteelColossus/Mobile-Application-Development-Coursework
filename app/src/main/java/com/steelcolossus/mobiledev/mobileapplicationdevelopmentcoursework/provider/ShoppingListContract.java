@@ -93,7 +93,7 @@ public final class ShoppingListContract
         /**
          * A projection of all columns in the shopping list table.
          */
-        public static final String[] PROJECTION_ALL = { _ID, TPNB, NAME, DEPARTMENT, PRICE, IMAGE_URL, SEARCH_QUERY, BOUGHT,  SHOPPINGLIST_ID };
+        public static final String[] PROJECTION_ALL = { _ID, TPNB, NAME, DEPARTMENT, PRICE, IMAGE_URL, SEARCH_QUERY, BOUGHT, SHOPPINGLIST_ID };
         /**
          * The default sort order for queries containing NAME fields.
          */
