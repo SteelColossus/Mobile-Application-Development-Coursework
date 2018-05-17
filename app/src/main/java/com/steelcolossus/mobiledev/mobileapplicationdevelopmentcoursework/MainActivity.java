@@ -147,13 +147,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
     }
 
-    @Override
-    protected void onPause()
-    {
-        super.onPause();
-        saveShoppingListsWithContentProvider(adapter.getDataset());
-    }
-
     private void deleteShoppingListFromDatabase(ShoppingList shoppingList)
     {
         ContentResolver contentResolver = getContentResolver();
@@ -209,21 +202,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     {
         deleteShoppingListFromDatabase(shoppingList);
         addShoppingListToDatabase(shoppingList);
-    }
-
-    private void saveShoppingListsWithContentProvider(ArrayList<ShoppingList> dataset)
-    {
-        ContentResolver contentResolver = getContentResolver();
-
-        contentResolver.delete(ShoppingListContract.Product.CONTENT_URI, null, null);
-        contentResolver.delete(ShoppingListContract.ShoppingList.CONTENT_URI, null, null);
-
-        for (int i = 0; i < dataset.size(); i++)
-        {
-            ShoppingList shoppingList = dataset.get(i);
-
-            addShoppingListToDatabase(shoppingList);
-        }
     }
 
     private void updateListVisibility(int itemCount)
