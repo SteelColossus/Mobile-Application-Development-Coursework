@@ -89,6 +89,18 @@ public class ShoppingList implements Parcelable
         return true;
     }
 
+    public float getTotalPrice()
+    {
+        float totalPrice = 0;
+
+        for (ShoppingListItem item : items)
+        {
+            totalPrice += item.getPrice();
+        }
+
+        return totalPrice;
+    }
+
     @Override
     public boolean equals(Object obj)
     {

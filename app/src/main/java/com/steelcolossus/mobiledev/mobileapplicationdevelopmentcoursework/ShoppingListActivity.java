@@ -15,9 +15,12 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Locale;
 
 interface BackNavigationCallback
 {
@@ -93,7 +96,7 @@ public class ShoppingListActivity extends AppCompatActivity
         adapter = new ShoppingListAdapter(shoppingList.getItems(), isNew);
         recyclerView.setAdapter(adapter);
 
-        updateListVisibility();
+        updateViewVisibility();
 
         final Context context = this;
 
@@ -127,7 +130,7 @@ public class ShoppingListActivity extends AppCompatActivity
                 {
                     case R.id.remove:
                         adapter.removeItem(shoppingListItem);
-                        updateListVisibility();
+                        updateViewVisibility();
                         Snackbar.make(view, shoppingListItem.getName() + " removed", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                         return true;
                     case R.id.changeItem:
@@ -166,7 +169,7 @@ public class ShoppingListActivity extends AppCompatActivity
 
                 adapter.addItem(result);
 
-                updateListVisibility();
+                updateViewVisibility();
             }
         }
         else if (requestCode == CHANGE_PRODUCT_REQUEST)
@@ -242,11 +245,17 @@ public class ShoppingListActivity extends AppCompatActivity
         return false;
     }
 
-    private void updateListVisibility()
+    private void updateViewVisibility()
     {
         int itemCount = adapter.getItemCount();
         findViewById(R.id.noItemsTextView).setVisibility(itemCount > 0 ? View.INVISIBLE : View.VISIBLE);
         findViewById(R.id.shoppingListRecyclerView).setVisibility(itemCount > 0 ? View.VISIBLE : View.INVISIBLE);
+
+        NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.UK);
+        String priceText = formatter.format(shoppingList.getTotalPrice());
+        TextView totalPriceTextView = findViewById(R.id.totalPriceTextView);
+
+        totalPriceTextView.setText(priceText);
     }
 
     private void showSaveShoppingListDialog(final BackNavigationCallback backNavigationCallback)

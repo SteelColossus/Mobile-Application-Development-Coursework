@@ -10,7 +10,9 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 interface ShoppingListFunction
 {
@@ -29,9 +31,12 @@ public class ListOfShoppingListsAdapter extends RecyclerView.Adapter<ListOfShopp
     private ShoppingListFunction onClickFunction;
     private ShoppingListContextMenuFunction menuFunction;
 
+    private final NumberFormat priceFormatter;
+
     ListOfShoppingListsAdapter(ArrayList<ShoppingList> dataset)
     {
         this.dataset = dataset;
+        priceFormatter = NumberFormat.getCurrencyInstance(Locale.UK);
     }
 
     public ArrayList<ShoppingList> getDataset()
@@ -68,6 +73,7 @@ public class ListOfShoppingListsAdapter extends RecyclerView.Adapter<ListOfShopp
         holder.setNameText(shoppingList.getName());
         holder.setDateText(DateFormat.getDateInstance(DateFormat.MEDIUM).format(shoppingList.getDate()));
         holder.setNumItemsText(shoppingList.getNumItems() + " items");
+        holder.setTotalPriceText(priceFormatter.format(shoppingList.getTotalPrice()));
 
         if (shoppingList.isCompleted())
         {
@@ -158,6 +164,7 @@ public class ListOfShoppingListsAdapter extends RecyclerView.Adapter<ListOfShopp
         private final TextView nameTextView;
         private final TextView dateTextView;
         private final TextView numItemsTextView;
+        private final TextView totalPriceTextView;
 
         ViewHolder(View itemView)
         {
@@ -167,6 +174,7 @@ public class ListOfShoppingListsAdapter extends RecyclerView.Adapter<ListOfShopp
             nameTextView = itemView.findViewById(R.id.nameTextView);
             dateTextView = itemView.findViewById(R.id.priceTextView);
             numItemsTextView = itemView.findViewById(R.id.numItemsTextView);
+            totalPriceTextView = itemView.findViewById(R.id.totalPriceTextView);
         }
 
         void setNameText(String text)
@@ -182,6 +190,11 @@ public class ListOfShoppingListsAdapter extends RecyclerView.Adapter<ListOfShopp
         void setNumItemsText(String text)
         {
             this.numItemsTextView.setText(text);
+        }
+
+        void setTotalPriceText(String text)
+        {
+            this.totalPriceTextView.setText(text);
         }
     }
 }
