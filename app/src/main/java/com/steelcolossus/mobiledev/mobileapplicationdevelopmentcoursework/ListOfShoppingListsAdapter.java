@@ -39,11 +39,6 @@ public class ListOfShoppingListsAdapter extends RecyclerView.Adapter<ListOfShopp
         priceFormatter = NumberFormat.getCurrencyInstance(Locale.UK);
     }
 
-    public ArrayList<ShoppingList> getDataset()
-    {
-        return dataset;
-    }
-
     public void setOnClickFunction(ShoppingListFunction onClickFunction)
     {
         this.onClickFunction = onClickFunction;
@@ -75,10 +70,7 @@ public class ListOfShoppingListsAdapter extends RecyclerView.Adapter<ListOfShopp
         holder.setNumItemsText(shoppingList.getNumItems() + " items");
         holder.setTotalPriceText(priceFormatter.format(shoppingList.getTotalPrice()));
 
-        if (shoppingList.isCompleted())
-        {
-            holder.itemView.findViewById(R.id.boughtOverlayImageView).setVisibility(View.VISIBLE);
-        }
+        holder.itemView.findViewById(R.id.boughtOverlayImageView).setVisibility(shoppingList.isCompleted() ? View.VISIBLE : View.GONE);
 
         holder.itemView.setOnClickListener(new View.OnClickListener()
         {

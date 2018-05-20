@@ -69,10 +69,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
 
         holder.setImage(shoppingListItem.getImageUrl());
 
-        if (shoppingListItem.isBought())
-        {
-            holder.itemView.findViewById(R.id.boughtOverlayImageView).setVisibility(View.VISIBLE);
-        }
+        holder.itemView.findViewById(R.id.boughtOverlayImageView).setVisibility(shoppingListItem.isBought() ? View.VISIBLE : View.GONE);
 
         holder.itemView.setOnClickListener(new View.OnClickListener()
         {
