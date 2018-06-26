@@ -35,21 +35,30 @@ public class ShoppingListLoader extends AsyncTaskLoader<ArrayList<ShoppingList>>
         {
             while (shoppingListCursor.moveToNext())
             {
-                Cursor productCursor = contentResolver.query(ShoppingListContract.Product.CONTENT_URI, ShoppingListContract.Product.PROJECTION_ALL, "SHOPPINGLIST_ID = ?", new String[] { Integer.toString(shoppingListCursor.getInt(0)) }, ShoppingListContract.Product.SORT_ORDER_DEFAULT);
+                Cursor shoppingListProductCursor = contentResolver.query(ShoppingListContract.ShoppingListProduct.CONTENT_URI, ShoppingListContract.ShoppingListProduct.PROJECTION_ALL, ShoppingListContract.ShoppingListProduct.SHOPPINGLIST_ID + " = ?", new String[] { Integer.toString(shoppingListCursor.getInt(0)) }, ShoppingListContract.ShoppingListProduct.SORT_ORDER_DEFAULT);
                 ArrayList<ShoppingListItem> items = new ArrayList<>();
 
-                if (productCursor != null)
+                if (shoppingListProductCursor != null)
                 {
-                    while (productCursor.moveToNext())
+                    while (shoppingListProductCursor.moveToNext())
                     {
-                        ShoppingListItem item = new ShoppingListItem(productCursor.getInt(1), productCursor.getString(2), productCursor.getString(3), productCursor.getFloat(4), productCursor.getString(5));
-                        item.setSearchQuery(productCursor.getString(6));
-                        item.setBought(productCursor.getInt(7) == 1);
+                        Cursor productCursor = contentResolver.query(ShoppingListContract.Product.CONTENT_URI, ShoppingListContract.Product.PROJECTION_ALL, ShoppingListContract.Product._ID + " = ?", new String[] { Integer.toString(shoppingListProductCursor.getInt(2))}, ShoppingListContract.Product.SORT_ORDER_DEFAULT);
 
-                        items.add(item);
+                        if (productCursor != null)
+                        {
+                            productCursor.moveToFirst();
+
+                            ShoppingListItem item = new ShoppingListItem(productCursor.getInt(1), productCursor.getString(2), productCursor.getString(3), productCursor.getFloat(4), productCursor.getString(5));
+                            item.setSearchQuery(productCursor.getString(6));
+                            item.setBought(productCursor.getInt(7) == 1);
+
+                            items.add(item);
+
+                            productCursor.close();
+                        }
                     }
 
-                    productCursor.close();
+                    shoppingListProductCursor.close();
                 }
 
                 ShoppingList shoppingList = new ShoppingList(shoppingListCursor.getString(1), new Date(shoppingListCursor.getLong(2)), items);

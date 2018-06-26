@@ -20,16 +20,21 @@ public class ShoppingListProvider extends ContentProvider
     private static final int SHOPPINGLIST_ID = 2;
     private static final int PRODUCT_LIST = 3;
     private static final int PRODUCT_ID = 4;
+    private static final int SHOPPINGLISTPRODUCT_LIST = 5;
+    private static final int SHOPPINGLISTPRODUCT_ID = 6;
+
     private static final UriMatcher URI_MATCHER;
 
     static
     {
         URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
 
-        URI_MATCHER.addURI(ShoppingListContract.AUTHORITY, "shoppinglist", SHOPPINGLIST_LIST);
-        URI_MATCHER.addURI(ShoppingListContract.AUTHORITY, "shoppinglist/#", SHOPPINGLIST_ID);
-        URI_MATCHER.addURI(ShoppingListContract.AUTHORITY, "product", PRODUCT_LIST);
-        URI_MATCHER.addURI(ShoppingListContract.AUTHORITY, "product/#", PRODUCT_ID);
+        URI_MATCHER.addURI(ShoppingListContract.AUTHORITY, ShoppingListContract.ShoppingList.CONTENT_NAME, SHOPPINGLIST_LIST);
+        URI_MATCHER.addURI(ShoppingListContract.AUTHORITY, ShoppingListContract.ShoppingList.CONTENT_NAME + "/#", SHOPPINGLIST_ID);
+        URI_MATCHER.addURI(ShoppingListContract.AUTHORITY, ShoppingListContract.Product.CONTENT_NAME, PRODUCT_LIST);
+        URI_MATCHER.addURI(ShoppingListContract.AUTHORITY, ShoppingListContract.Product.CONTENT_NAME + "/#", PRODUCT_ID);
+        URI_MATCHER.addURI(ShoppingListContract.AUTHORITY, ShoppingListContract.ShoppingListProduct.CONTENT_NAME, SHOPPINGLISTPRODUCT_LIST);
+        URI_MATCHER.addURI(ShoppingListContract.AUTHORITY, ShoppingListContract.ShoppingListProduct.CONTENT_NAME + "/#", SHOPPINGLISTPRODUCT_ID);
     }
 
     private ShoppingListOpenHelper shoppingListOpenHelper;
@@ -55,6 +60,10 @@ public class ShoppingListProvider extends ContentProvider
                 return ShoppingListContract.Product.CONTENT_TYPE;
             case PRODUCT_ID:
                 return ShoppingListContract.Product.CONTENT_ITEM_TYPE;
+            case SHOPPINGLISTPRODUCT_LIST:
+                return ShoppingListContract.ShoppingListProduct.CONTENT_TYPE;
+            case SHOPPINGLISTPRODUCT_ID:
+                return ShoppingListContract.ShoppingListProduct.CONTENT_ITEM_TYPE;
             default:
                 return null;
         }
@@ -70,18 +79,25 @@ public class ShoppingListProvider extends ContentProvider
         switch (URI_MATCHER.match(uri))
         {
             case SHOPPINGLIST_LIST:
-                queryBuilder.setTables(ShoppingListOpenHelper.SHOPPINGLIST_TABLE_NAME);
+                queryBuilder.setTables(DBSchema.SHOPPINGLIST_TABLE_NAME);
                 break;
             case SHOPPINGLIST_ID:
-                queryBuilder.setTables(ShoppingListOpenHelper.SHOPPINGLIST_TABLE_NAME);
+                queryBuilder.setTables(DBSchema.SHOPPINGLIST_TABLE_NAME);
                 queryBuilder.appendWhere(ShoppingListContract.ShoppingList._ID + " = " + uri.getLastPathSegment());
                 break;
             case PRODUCT_LIST:
-                queryBuilder.setTables(ShoppingListOpenHelper.PRODUCT_TABLE_NAME);
+                queryBuilder.setTables(DBSchema.PRODUCT_TABLE_NAME);
                 break;
             case PRODUCT_ID:
-                queryBuilder.setTables(ShoppingListOpenHelper.PRODUCT_TABLE_NAME);
+                queryBuilder.setTables(DBSchema.PRODUCT_TABLE_NAME);
                 queryBuilder.appendWhere(ShoppingListContract.Product._ID + " = " + uri.getLastPathSegment());
+                break;
+            case SHOPPINGLISTPRODUCT_LIST:
+                queryBuilder.setTables(DBSchema.SHOPPINGLISTPRODUCT_TABLE_NAME);
+                break;
+            case SHOPPINGLISTPRODUCT_ID:
+                queryBuilder.setTables(DBSchema.SHOPPINGLISTPRODUCT_TABLE_NAME);
+                queryBuilder.appendWhere(ShoppingListContract.ShoppingListProduct._ID + " = " + uri.getLastPathSegment());
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
@@ -109,10 +125,13 @@ public class ShoppingListProvider extends ContentProvider
         switch (URI_MATCHER.match(uri))
         {
             case SHOPPINGLIST_LIST:
-                table = ShoppingListOpenHelper.SHOPPINGLIST_TABLE_NAME;
+                table = DBSchema.SHOPPINGLIST_TABLE_NAME;
                 break;
             case PRODUCT_LIST:
-                table = ShoppingListOpenHelper.PRODUCT_TABLE_NAME;
+                table = DBSchema.PRODUCT_TABLE_NAME;
+                break;
+            case SHOPPINGLISTPRODUCT_LIST:
+                table = DBSchema.SHOPPINGLISTPRODUCT_TABLE_NAME;
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported URI for insertion: " + uri);
@@ -149,10 +168,10 @@ public class ShoppingListProvider extends ContentProvider
         switch (URI_MATCHER.match(uri))
         {
             case SHOPPINGLIST_LIST:
-                table = ShoppingListOpenHelper.SHOPPINGLIST_TABLE_NAME;
+                table = DBSchema.SHOPPINGLIST_TABLE_NAME;
                 break;
             case SHOPPINGLIST_ID:
-                table = ShoppingListOpenHelper.SHOPPINGLIST_TABLE_NAME;
+                table = DBSchema.SHOPPINGLIST_TABLE_NAME;
 
                 if (!TextUtils.isEmpty(selection))
                 {
@@ -163,10 +182,24 @@ public class ShoppingListProvider extends ContentProvider
 
                 break;
             case PRODUCT_LIST:
-                table = ShoppingListOpenHelper.PRODUCT_TABLE_NAME;
+                table = DBSchema.PRODUCT_TABLE_NAME;
                 break;
             case PRODUCT_ID:
-                table = ShoppingListOpenHelper.PRODUCT_TABLE_NAME;
+                table = DBSchema.PRODUCT_TABLE_NAME;
+
+                if (!TextUtils.isEmpty(selection))
+                {
+                    selection += " AND ";
+                }
+
+                selection += ShoppingListContract.Product._ID + " = " + uri.getLastPathSegment();
+
+                break;
+            case SHOPPINGLISTPRODUCT_LIST:
+                table = DBSchema.SHOPPINGLISTPRODUCT_TABLE_NAME;
+                break;
+            case SHOPPINGLISTPRODUCT_ID:
+                table = DBSchema.SHOPPINGLISTPRODUCT_TABLE_NAME;
 
                 if (!TextUtils.isEmpty(selection))
                 {
@@ -205,10 +238,10 @@ public class ShoppingListProvider extends ContentProvider
         switch (URI_MATCHER.match(uri))
         {
             case SHOPPINGLIST_LIST:
-                table = ShoppingListOpenHelper.SHOPPINGLIST_TABLE_NAME;
+                table = DBSchema.SHOPPINGLIST_TABLE_NAME;
                 break;
             case SHOPPINGLIST_ID:
-                table = ShoppingListOpenHelper.SHOPPINGLIST_TABLE_NAME;
+                table = DBSchema.SHOPPINGLIST_TABLE_NAME;
 
                 if (!TextUtils.isEmpty(selection))
                 {
@@ -219,10 +252,24 @@ public class ShoppingListProvider extends ContentProvider
 
                 break;
             case PRODUCT_LIST:
-                table = ShoppingListOpenHelper.PRODUCT_TABLE_NAME;
+                table = DBSchema.PRODUCT_TABLE_NAME;
                 break;
             case PRODUCT_ID:
-                table = ShoppingListOpenHelper.PRODUCT_TABLE_NAME;
+                table = DBSchema.PRODUCT_TABLE_NAME;
+
+                if (!TextUtils.isEmpty(selection))
+                {
+                    selection += " AND ";
+                }
+
+                selection += ShoppingListContract.Product._ID + " = " + uri.getLastPathSegment();
+
+                break;
+            case SHOPPINGLISTPRODUCT_LIST:
+                table = DBSchema.SHOPPINGLISTPRODUCT_TABLE_NAME;
+                break;
+            case SHOPPINGLISTPRODUCT_ID:
+                table = DBSchema.SHOPPINGLISTPRODUCT_TABLE_NAME;
 
                 if (!TextUtils.isEmpty(selection))
                 {

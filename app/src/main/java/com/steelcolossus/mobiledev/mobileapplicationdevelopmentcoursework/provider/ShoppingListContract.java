@@ -19,9 +19,13 @@ public final class ShoppingListContract
     public static final class ShoppingList implements BaseColumns
     {
         /**
+         * The name of this type of content.
+         */
+        public static final String CONTENT_NAME = "shoppinglist";
+        /**
          * The content URI for this table.
          */
-        public static final Uri CONTENT_URI = Uri.withAppendedPath(ShoppingListContract.CONTENT_URI, "shoppinglist");
+        public static final Uri CONTENT_URI = Uri.withAppendedPath(ShoppingListContract.CONTENT_URI, CONTENT_NAME);
         /**
          * The name column of the table.
          */
@@ -41,7 +45,47 @@ public final class ShoppingListContract
         /**
          * The base mime type for a shopping list.
          */
-        private static final String MIME_TYPE = "vnd.com.steelcolossus.shoppinglist";
+        private static final String MIME_TYPE = "vnd.com.steelcolossus." + CONTENT_NAME;
+        /**
+         * The mime type of a directory of shopping lists.
+         */
+        public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + MIME_TYPE;
+        /**
+         * The mime type of a single shopping list.
+         */
+        public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + MIME_TYPE;
+    }
+
+    public static final class ShoppingListProduct implements BaseColumns
+    {
+        /**
+         * The name of this type of content.
+         */
+        public static final String CONTENT_NAME = "shoppinglistproduct";
+        /**
+         * The content URI for this table.
+         */
+        public static final Uri CONTENT_URI = Uri.withAppendedPath(ShoppingListContract.CONTENT_URI, CONTENT_NAME);
+        /**
+         * The name column of the table.
+         */
+        public static final String SHOPPINGLIST_ID = "shoppinglist_id";
+        /**
+         * The date column of the table.
+         */
+        public static final String PRODUCT_ID = "product_id";
+        /**
+         * A projection of all columns in the shopping list table.
+         */
+        public static final String[] PROJECTION_ALL = { _ID, SHOPPINGLIST_ID, PRODUCT_ID };
+        /**
+         * The default sort order for queries containing NAME fields.
+         */
+        public static final String SORT_ORDER_DEFAULT = SHOPPINGLIST_ID + " ASC";
+        /**
+         * The base mime type for a shopping list.
+         */
+        private static final String MIME_TYPE = "vnd.com.steelcolossus." + CONTENT_NAME;
         /**
          * The mime type of a directory of shopping lists.
          */
@@ -55,9 +99,13 @@ public final class ShoppingListContract
     public static final class Product implements BaseColumns
     {
         /**
+         * The name of this type of content.
+         */
+        public static final String CONTENT_NAME = "product";
+        /**
          * The content URI for this table.
          */
-        public static final Uri CONTENT_URI = Uri.withAppendedPath(ShoppingListContract.CONTENT_URI, "product");
+        public static final Uri CONTENT_URI = Uri.withAppendedPath(ShoppingListContract.CONTENT_URI, CONTENT_NAME);
         /**
          * The tpnb column of the table.
          */
@@ -87,13 +135,9 @@ public final class ShoppingListContract
          */
         public static final String BOUGHT = "bought";
         /**
-         * The shopping list id column of the table.
-         */
-        public static final String SHOPPINGLIST_ID = "shoppinglist_id";
-        /**
          * A projection of all columns in the shopping list table.
          */
-        public static final String[] PROJECTION_ALL = { _ID, TPNB, NAME, DEPARTMENT, PRICE, IMAGE_URL, SEARCH_QUERY, BOUGHT, SHOPPINGLIST_ID };
+        public static final String[] PROJECTION_ALL = { _ID, TPNB, NAME, DEPARTMENT, PRICE, IMAGE_URL, SEARCH_QUERY, BOUGHT };
         /**
          * The default sort order for queries containing NAME fields.
          */
@@ -101,7 +145,7 @@ public final class ShoppingListContract
         /**
          * The base mime type for a product.
          */
-        private static final String MIME_TYPE = "vnd.com.steelcolossus.product";
+        private static final String MIME_TYPE = "vnd.com.steelcolossus." + CONTENT_NAME;
         /**
          * The mime type of a directory of products.
          */

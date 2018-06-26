@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
             cursor.moveToFirst();
             String id = Integer.toString(cursor.getInt(0));
 
-            contentResolver.delete(ShoppingListContract.Product.CONTENT_URI, ShoppingListContract.Product.SHOPPINGLIST_ID + " = ?", new String[] { id });
+            contentResolver.delete(ShoppingListContract.ShoppingListProduct.CONTENT_URI, ShoppingListContract.ShoppingListProduct.SHOPPINGLIST_ID + " = ?", new String[] { id });
             contentResolver.delete(ShoppingListContract.ShoppingList.CONTENT_URI, ShoppingListContract.ShoppingList._ID + " = ?", new String[] { id });
 
             cursor.close();
@@ -217,9 +217,18 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 newProduct.put(ShoppingListContract.Product.IMAGE_URL, item.getImageUrl());
                 newProduct.put(ShoppingListContract.Product.SEARCH_QUERY, item.getSearchQuery());
                 newProduct.put(ShoppingListContract.Product.BOUGHT, item.isBought());
-                newProduct.put(ShoppingListContract.Product.SHOPPINGLIST_ID, Integer.parseInt(shoppingListUri.getLastPathSegment()));
 
-                contentResolver.insert(ShoppingListContract.Product.CONTENT_URI, newProduct);
+                Uri productUri = contentResolver.insert(ShoppingListContract.Product.CONTENT_URI, newProduct);
+
+                if (productUri != null)
+                {
+                    ContentValues newShoppingListProduct = new ContentValues();
+
+                    newShoppingListProduct.put(ShoppingListContract.ShoppingListProduct.SHOPPINGLIST_ID, Integer.parseInt(shoppingListUri.getLastPathSegment()));
+                    newShoppingListProduct.put(ShoppingListContract.ShoppingListProduct.PRODUCT_ID, Integer.parseInt(productUri.getLastPathSegment()));
+
+                    contentResolver.insert(ShoppingListContract.ShoppingListProduct.CONTENT_URI, newShoppingListProduct);
+                }
             }
         }
     }
