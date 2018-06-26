@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     {
         ContentResolver contentResolver = getContentResolver();
 
-        Cursor cursor = contentResolver.query(ShoppingListContract.ShoppingList.CONTENT_URI, new String[] { ShoppingListContract.ShoppingList._ID }, ShoppingListContract.ShoppingList.DATE + " = ?", new String[] { Long.toString(shoppingList.getDate().getTime()) }, ShoppingListContract.ShoppingList.SORT_ORDER_DEFAULT);
+        Cursor cursor = contentResolver.query(ShoppingListContract.ShoppingList.CONTENT_URI, new String[] { ShoppingListContract.ShoppingList._ID }, ShoppingListContract.ShoppingList._ID + " = ?", new String[] { Integer.toString(shoppingList.getId()) }, ShoppingListContract.ShoppingList.SORT_ORDER_DEFAULT);
 
         if (cursor != null)
         {
@@ -208,24 +208,47 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
             for (ShoppingListItem item : items)
             {
-                ContentValues newProduct = new ContentValues();
+                ContentValues productValues = new ContentValues();
 
-                newProduct.put(ShoppingListContract.Product.TPNB, item.getTpnb());
-                newProduct.put(ShoppingListContract.Product.NAME, item.getName());
-                newProduct.put(ShoppingListContract.Product.DEPARTMENT, item.getDepartment());
-                newProduct.put(ShoppingListContract.Product.PRICE, item.getPrice());
-                newProduct.put(ShoppingListContract.Product.IMAGE_URL, item.getImageUrl());
-                newProduct.put(ShoppingListContract.Product.SEARCH_QUERY, item.getSearchQuery());
-                newProduct.put(ShoppingListContract.Product.BOUGHT, item.isBought());
+                productValues.put(ShoppingListContract.Product.TPNB, item.getTpnb());
+                productValues.put(ShoppingListContract.Product.NAME, item.getName());
+                productValues.put(ShoppingListContract.Product.DEPARTMENT, item.getDepartment());
+                productValues.put(ShoppingListContract.Product.PRICE, item.getPrice());
+                productValues.put(ShoppingListContract.Product.IMAGE_URL, item.getImageUrl());
+                productValues.put(ShoppingListContract.Product.SEARCH_QUERY, item.getSearchQuery());
+                productValues.put(ShoppingListContract.Product.BOUGHT, item.isBought());
 
-                Uri productUri = contentResolver.insert(ShoppingListContract.Product.CONTENT_URI, newProduct);
+                Cursor existingProductCursor = contentResolver.query(ShoppingListContract.Product.CONTENT_URI, ShoppingListContract.Product.PROJECTION_ALL, ShoppingListContract.Product.TPNB + " = ?", new String[]{ Integer.toString(item.getTpnb()) }, ShoppingListContract.Product.SORT_ORDER_DEFAULT);
 
-                if (productUri != null)
+                int productId = -1;
+
+                if (existingProductCursor != null)
+                {
+                    if (existingProductCursor.getCount() > 0)
+                    {
+                        contentResolver.update(ShoppingListContract.Product.CONTENT_URI, productValues, ShoppingListContract.Product.TPNB + " = ?", new String[] { Integer.toString(item.getTpnb()) });
+                        existingProductCursor.moveToFirst();
+                        productId = existingProductCursor.getInt(0);
+                    }
+
+                    existingProductCursor.close();
+                }
+                else
+                {
+                    Uri productUri = contentResolver.insert(ShoppingListContract.Product.CONTENT_URI, productValues);
+
+                    if (productUri != null)
+                    {
+                        productId = Integer.parseInt(productUri.getLastPathSegment());
+                    }
+                }
+
+                if (productId != -1)
                 {
                     ContentValues newShoppingListProduct = new ContentValues();
 
                     newShoppingListProduct.put(ShoppingListContract.ShoppingListProduct.SHOPPINGLIST_ID, Integer.parseInt(shoppingListUri.getLastPathSegment()));
-                    newShoppingListProduct.put(ShoppingListContract.ShoppingListProduct.PRODUCT_ID, Integer.parseInt(productUri.getLastPathSegment()));
+                    newShoppingListProduct.put(ShoppingListContract.ShoppingListProduct.PRODUCT_ID, productId);
 
                     contentResolver.insert(ShoppingListContract.ShoppingListProduct.CONTENT_URI, newShoppingListProduct);
                 }
