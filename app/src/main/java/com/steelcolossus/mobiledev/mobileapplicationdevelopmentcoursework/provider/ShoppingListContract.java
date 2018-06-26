@@ -75,9 +75,17 @@ public final class ShoppingListContract
          */
         public static final String PRODUCT_ID = "product_id";
         /**
+         * The search query column of the table.
+         */
+        public static final String SEARCH_QUERY = "search_query";
+        /**
+         * The bought column of the table.
+         */
+        public static final String BOUGHT = "bought";
+        /**
          * A projection of all columns in the shopping list table.
          */
-        public static final String[] PROJECTION_ALL = { _ID, SHOPPINGLIST_ID, PRODUCT_ID };
+        public static final String[] PROJECTION_ALL = { _ID, SHOPPINGLIST_ID, PRODUCT_ID, SEARCH_QUERY, BOUGHT };
         /**
          * The default sort order for queries containing NAME fields.
          */
@@ -127,17 +135,9 @@ public final class ShoppingListContract
          */
         public static final String IMAGE_URL = "image_url";
         /**
-         * The search query column of the table.
-         */
-        public static final String SEARCH_QUERY = "search_query";
-        /**
-         * The bought column of the table.
-         */
-        public static final String BOUGHT = "bought";
-        /**
          * A projection of all columns in the shopping list table.
          */
-        public static final String[] PROJECTION_ALL = { _ID, TPNB, NAME, DEPARTMENT, PRICE, IMAGE_URL, SEARCH_QUERY, BOUGHT };
+        public static final String[] PROJECTION_ALL = { _ID, TPNB, NAME, DEPARTMENT, PRICE, IMAGE_URL };
         /**
          * The default sort order for queries containing NAME fields.
          */

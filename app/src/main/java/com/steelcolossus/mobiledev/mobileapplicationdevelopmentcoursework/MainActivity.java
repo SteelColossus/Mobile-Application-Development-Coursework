@@ -215,23 +215,16 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 productValues.put(ShoppingListContract.Product.DEPARTMENT, item.getDepartment());
                 productValues.put(ShoppingListContract.Product.PRICE, item.getPrice());
                 productValues.put(ShoppingListContract.Product.IMAGE_URL, item.getImageUrl());
-                productValues.put(ShoppingListContract.Product.SEARCH_QUERY, item.getSearchQuery());
-                productValues.put(ShoppingListContract.Product.BOUGHT, item.isBought());
 
                 Cursor existingProductCursor = contentResolver.query(ShoppingListContract.Product.CONTENT_URI, ShoppingListContract.Product.PROJECTION_ALL, ShoppingListContract.Product.TPNB + " = ?", new String[]{ Integer.toString(item.getTpnb()) }, ShoppingListContract.Product.SORT_ORDER_DEFAULT);
 
                 int productId = -1;
 
-                if (existingProductCursor != null)
+                if (existingProductCursor != null && existingProductCursor.getCount() > 0)
                 {
-                    if (existingProductCursor.getCount() > 0)
-                    {
-                        contentResolver.update(ShoppingListContract.Product.CONTENT_URI, productValues, ShoppingListContract.Product.TPNB + " = ?", new String[] { Integer.toString(item.getTpnb()) });
-                        existingProductCursor.moveToFirst();
-                        productId = existingProductCursor.getInt(0);
-                    }
-
-                    existingProductCursor.close();
+                    contentResolver.update(ShoppingListContract.Product.CONTENT_URI, productValues, ShoppingListContract.Product.TPNB + " = ?", new String[] { Integer.toString(item.getTpnb()) });
+                    existingProductCursor.moveToFirst();
+                    productId = existingProductCursor.getInt(0);
                 }
                 else
                 {
@@ -243,12 +236,19 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                     }
                 }
 
+                if (existingProductCursor != null)
+                {
+                    existingProductCursor.close();
+                }
+
                 if (productId != -1)
                 {
                     ContentValues newShoppingListProduct = new ContentValues();
 
                     newShoppingListProduct.put(ShoppingListContract.ShoppingListProduct.SHOPPINGLIST_ID, Integer.parseInt(shoppingListUri.getLastPathSegment()));
                     newShoppingListProduct.put(ShoppingListContract.ShoppingListProduct.PRODUCT_ID, productId);
+                    newShoppingListProduct.put(ShoppingListContract.ShoppingListProduct.SEARCH_QUERY, item.getSearchQuery());
+                    newShoppingListProduct.put(ShoppingListContract.ShoppingListProduct.BOUGHT, item.isBought());
 
                     contentResolver.insert(ShoppingListContract.ShoppingListProduct.CONTENT_URI, newShoppingListProduct);
                 }

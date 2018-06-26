@@ -49,8 +49,8 @@ public class ShoppingListLoader extends AsyncTaskLoader<ArrayList<ShoppingList>>
                             productCursor.moveToFirst();
 
                             ShoppingListItem item = new ShoppingListItem(productCursor.getInt(1), productCursor.getString(2), productCursor.getString(3), productCursor.getFloat(4), productCursor.getString(5));
-                            item.setSearchQuery(productCursor.getString(6));
-                            item.setBought(productCursor.getInt(7) == 1);
+                            item.setSearchQuery(shoppingListProductCursor.getString(3));
+                            item.setBought(shoppingListProductCursor.getInt(4) == 1);
 
                             items.add(item);
 
