@@ -61,7 +61,7 @@ public class ShoppingListLoader extends AsyncTaskLoader<ArrayList<ShoppingList>>
                     shoppingListProductCursor.close();
                 }
 
-                ShoppingList shoppingList = new ShoppingList(shoppingListCursor.getString(1), new Date(shoppingListCursor.getLong(2)), items);
+                ShoppingList shoppingList = new ShoppingList(shoppingListCursor.getInt(0), shoppingListCursor.getString(1), new Date(shoppingListCursor.getLong(2)), items);
                 data.add(shoppingList);
             }
 

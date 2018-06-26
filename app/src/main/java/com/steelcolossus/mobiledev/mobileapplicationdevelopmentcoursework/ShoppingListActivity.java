@@ -70,7 +70,7 @@ public class ShoppingListActivity extends AppCompatActivity
         {
             if (isNew)
             {
-                shoppingList = new ShoppingList(intent.getStringExtra(MainActivity.INTENT_TAG_SHOPPING_LIST_NAME), new Date());
+                shoppingList = new ShoppingList(-1, intent.getStringExtra(MainActivity.INTENT_TAG_SHOPPING_LIST_NAME), new Date());
                 initialShoppingList = null;
             }
             else

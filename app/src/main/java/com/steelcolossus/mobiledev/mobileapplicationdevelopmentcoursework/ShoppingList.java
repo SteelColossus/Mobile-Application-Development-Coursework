@@ -5,6 +5,7 @@ import android.os.Parcelable;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class ShoppingList implements Parcelable
 {
@@ -23,17 +24,19 @@ public class ShoppingList implements Parcelable
         }
     };
 
+    private int id;
     private String name;
     private Date date;
     private ArrayList<ShoppingListItem> items;
 
-    ShoppingList(String name, Date date)
+    ShoppingList(int id, String name, Date date)
     {
-        this(name, date, new ArrayList<ShoppingListItem>());
+        this(id, name, date, new ArrayList<ShoppingListItem>());
     }
 
-    ShoppingList(String name, Date date, ArrayList<ShoppingListItem> items)
+    ShoppingList(int id, String name, Date date, ArrayList<ShoppingListItem> items)
     {
+        this.id = id;
         this.name = name;
         this.date = date;
         this.items = items;
@@ -41,7 +44,7 @@ public class ShoppingList implements Parcelable
 
     private ShoppingList(Parcel parcel)
     {
-        this(parcel.readString(), new Date(parcel.readLong()));
+        this(parcel.readInt(), parcel.readString(), new Date(parcel.readLong()));
 
         parcel.readTypedList(this.items, ShoppingListItem.CREATOR);
     }
@@ -49,6 +52,11 @@ public class ShoppingList implements Parcelable
     public ArrayList<ShoppingListItem> getItems()
     {
         return items;
+    }
+
+    public int getId()
+    {
+        return id;
     }
 
     public String getName()
@@ -108,7 +116,7 @@ public class ShoppingList implements Parcelable
         {
             ShoppingList otherShoppingList = (ShoppingList)obj;
 
-            return name.equals(otherShoppingList.getName()) && date.equals(otherShoppingList.getDate()) && items.equals(otherShoppingList.getItems());
+            return id == otherShoppingList.getId();
         }
         else
         {
@@ -133,6 +141,7 @@ public class ShoppingList implements Parcelable
     @Override
     public void writeToParcel(Parcel dest, int flags)
     {
+        dest.writeInt(id);
         dest.writeString(name);
         dest.writeLong(date.getTime());
         dest.writeTypedList(items);
