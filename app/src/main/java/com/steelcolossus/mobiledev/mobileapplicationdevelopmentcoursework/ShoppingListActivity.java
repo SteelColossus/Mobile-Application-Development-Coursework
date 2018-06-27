@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -21,6 +22,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Map;
 
 interface BackNavigationCallback
 {
@@ -72,6 +74,8 @@ public class ShoppingListActivity extends AppCompatActivity
             {
                 shoppingList = new ShoppingList(-1, intent.getStringExtra(MainActivity.INTENT_TAG_SHOPPING_LIST_NAME), new Date());
                 initialShoppingList = null;
+
+                ProductSuggestionsProvider productSuggestionsProvider = new ProductSuggestionsProvider(getContentResolver());
             }
             else
             {

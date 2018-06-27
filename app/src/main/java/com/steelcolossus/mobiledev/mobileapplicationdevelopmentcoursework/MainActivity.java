@@ -177,18 +177,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     {
         ContentResolver contentResolver = getContentResolver();
 
-        Cursor cursor = contentResolver.query(ShoppingListContract.ShoppingList.CONTENT_URI, new String[] { ShoppingListContract.ShoppingList._ID }, ShoppingListContract.ShoppingList._ID + " = ?", new String[] { Integer.toString(shoppingList.getId()) }, ShoppingListContract.ShoppingList.SORT_ORDER_DEFAULT);
+        String id = Integer.toString(shoppingList.getId());
 
-        if (cursor != null)
-        {
-            cursor.moveToFirst();
-            String id = Integer.toString(cursor.getInt(0));
-
-            contentResolver.delete(ShoppingListContract.ShoppingListProduct.CONTENT_URI, ShoppingListContract.ShoppingListProduct.SHOPPINGLIST_ID + " = ?", new String[] { id });
-            contentResolver.delete(ShoppingListContract.ShoppingList.CONTENT_URI, ShoppingListContract.ShoppingList._ID + " = ?", new String[] { id });
-
-            cursor.close();
-        }
+        contentResolver.delete(ShoppingListContract.ShoppingListProduct.CONTENT_URI, ShoppingListContract.ShoppingListProduct.SHOPPINGLIST_ID + " = ?", new String[] { id });
+        contentResolver.delete(ShoppingListContract.ShoppingList.CONTENT_URI, ShoppingListContract.ShoppingList._ID + " = ?", new String[] { id });
     }
 
     private void addShoppingListToDatabase(ShoppingList shoppingList)

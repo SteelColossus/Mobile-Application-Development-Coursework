@@ -1,6 +1,7 @@
 package com.steelcolossus.mobiledev.mobileapplicationdevelopmentcoursework;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;
 import android.support.annotation.NonNull;
@@ -42,7 +43,7 @@ public class ShoppingListLoader extends AsyncTaskLoader<ArrayList<ShoppingList>>
                 {
                     while (shoppingListProductCursor.moveToNext())
                     {
-                        Cursor productCursor = contentResolver.query(ShoppingListContract.Product.CONTENT_URI, ShoppingListContract.Product.PROJECTION_ALL, ShoppingListContract.Product._ID + " = ?", new String[] { Integer.toString(shoppingListProductCursor.getInt(2))}, ShoppingListContract.Product.SORT_ORDER_DEFAULT);
+                        Cursor productCursor = contentResolver.query(ContentUris.withAppendedId(ShoppingListContract.Product.CONTENT_URI, shoppingListProductCursor.getInt(2)), ShoppingListContract.Product.PROJECTION_ALL, null, null, ShoppingListContract.Product.SORT_ORDER_DEFAULT);
 
                         if (productCursor != null)
                         {

@@ -67,6 +67,10 @@ public final class ShoppingListContract
          */
         public static final Uri CONTENT_URI = Uri.withAppendedPath(ShoppingListContract.CONTENT_URI, CONTENT_NAME);
         /**
+         * The content URI for this table with same shops grouped together.
+         */
+        public static final Uri CONTENT_URI_DISTINCT_SHOPS = Uri.withAppendedPath(ShoppingListContract.CONTENT_URI, CONTENT_NAME + "-distinct");
+        /**
          * The name column of the table.
          */
         public static final String SHOPPINGLIST_ID = "shoppinglist_id";

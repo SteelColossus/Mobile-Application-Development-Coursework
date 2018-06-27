@@ -22,6 +22,7 @@ public class ShoppingListProvider extends ContentProvider
     private static final int PRODUCT_ID = 4;
     private static final int SHOPPINGLISTPRODUCT_LIST = 5;
     private static final int SHOPPINGLISTPRODUCT_ID = 6;
+    private static final int SHOPPINGLISTPRODUCT_LIST_DISTINCT_SHOPS = 20;
 
     private static final UriMatcher URI_MATCHER;
 
@@ -35,6 +36,7 @@ public class ShoppingListProvider extends ContentProvider
         URI_MATCHER.addURI(ShoppingListContract.AUTHORITY, ShoppingListContract.Product.CONTENT_NAME + "/#", PRODUCT_ID);
         URI_MATCHER.addURI(ShoppingListContract.AUTHORITY, ShoppingListContract.ShoppingListProduct.CONTENT_NAME, SHOPPINGLISTPRODUCT_LIST);
         URI_MATCHER.addURI(ShoppingListContract.AUTHORITY, ShoppingListContract.ShoppingListProduct.CONTENT_NAME + "/#", SHOPPINGLISTPRODUCT_ID);
+        URI_MATCHER.addURI(ShoppingListContract.AUTHORITY, ShoppingListContract.ShoppingListProduct.CONTENT_NAME + "-distinct", SHOPPINGLISTPRODUCT_LIST_DISTINCT_SHOPS);
     }
 
     private ShoppingListOpenHelper shoppingListOpenHelper;
@@ -61,6 +63,7 @@ public class ShoppingListProvider extends ContentProvider
             case PRODUCT_ID:
                 return ShoppingListContract.Product.CONTENT_ITEM_TYPE;
             case SHOPPINGLISTPRODUCT_LIST:
+            case SHOPPINGLISTPRODUCT_LIST_DISTINCT_SHOPS:
                 return ShoppingListContract.ShoppingListProduct.CONTENT_TYPE;
             case SHOPPINGLISTPRODUCT_ID:
                 return ShoppingListContract.ShoppingListProduct.CONTENT_ITEM_TYPE;
@@ -75,6 +78,8 @@ public class ShoppingListProvider extends ContentProvider
     {
         SQLiteDatabase db = shoppingListOpenHelper.getReadableDatabase();
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+
+        String groupBy = null;
 
         switch (URI_MATCHER.match(uri))
         {
@@ -95,6 +100,10 @@ public class ShoppingListProvider extends ContentProvider
             case SHOPPINGLISTPRODUCT_LIST:
                 queryBuilder.setTables(DBSchema.SHOPPINGLISTPRODUCT_TABLE_NAME);
                 break;
+            case SHOPPINGLISTPRODUCT_LIST_DISTINCT_SHOPS:
+                queryBuilder.setTables(DBSchema.SHOPPINGLISTPRODUCT_TABLE_NAME);
+                groupBy = ShoppingListContract.ShoppingListProduct.SHOPPINGLIST_ID;
+                break;
             case SHOPPINGLISTPRODUCT_ID:
                 queryBuilder.setTables(DBSchema.SHOPPINGLISTPRODUCT_TABLE_NAME);
                 queryBuilder.appendWhere(ShoppingListContract.ShoppingListProduct._ID + " = " + uri.getLastPathSegment());
@@ -103,7 +112,7 @@ public class ShoppingListProvider extends ContentProvider
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
         }
 
-        Cursor cursor = queryBuilder.query(db, projection, selection, selectionArgs, null, null, sortOrder);
+        Cursor cursor = queryBuilder.query(db, projection, selection, selectionArgs, groupBy, null, sortOrder);
 
         Context context = getContext();
 
@@ -131,6 +140,7 @@ public class ShoppingListProvider extends ContentProvider
                 table = DBSchema.PRODUCT_TABLE_NAME;
                 break;
             case SHOPPINGLISTPRODUCT_LIST:
+            case SHOPPINGLISTPRODUCT_LIST_DISTINCT_SHOPS:
                 table = DBSchema.SHOPPINGLISTPRODUCT_TABLE_NAME;
                 break;
             default:
@@ -196,6 +206,7 @@ public class ShoppingListProvider extends ContentProvider
 
                 break;
             case SHOPPINGLISTPRODUCT_LIST:
+            case SHOPPINGLISTPRODUCT_LIST_DISTINCT_SHOPS:
                 table = DBSchema.SHOPPINGLISTPRODUCT_TABLE_NAME;
                 break;
             case SHOPPINGLISTPRODUCT_ID:
@@ -266,6 +277,7 @@ public class ShoppingListProvider extends ContentProvider
 
                 break;
             case SHOPPINGLISTPRODUCT_LIST:
+            case SHOPPINGLISTPRODUCT_LIST_DISTINCT_SHOPS:
                 table = DBSchema.SHOPPINGLISTPRODUCT_TABLE_NAME;
                 break;
             case SHOPPINGLISTPRODUCT_ID:
