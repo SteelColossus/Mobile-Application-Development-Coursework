@@ -13,7 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -74,8 +73,6 @@ public class ShoppingListActivity extends AppCompatActivity
             {
                 shoppingList = new ShoppingList(-1, intent.getStringExtra(MainActivity.INTENT_TAG_SHOPPING_LIST_NAME), new Date());
                 initialShoppingList = null;
-
-                ProductSuggestionsProvider productSuggestionsProvider = new ProductSuggestionsProvider(getContentResolver());
             }
             else
             {
@@ -100,6 +97,20 @@ public class ShoppingListActivity extends AppCompatActivity
         adapter = new ShoppingListAdapter(shoppingList.getItems(), isNew);
         recyclerView.setAdapter(adapter);
 
+        if (isNew)
+        {
+            ProductSuggestionsProvider productSuggestionsProvider = new ProductSuggestionsProvider(getContentResolver());
+            Map<ShoppingListItem, Integer> previousProductsMap = productSuggestionsProvider.getProductsByOccasionsBought();
+
+            for (Map.Entry<ShoppingListItem, Integer> previousProductEntry : previousProductsMap.entrySet())
+            {
+                if (previousProductEntry.getValue() >= 2)
+                {
+                    adapter.addItem(previousProductEntry.getKey(), true);
+                }
+            }
+        }
+
         updateViewVisibility();
 
         final Context context = this;
@@ -122,6 +133,24 @@ public class ShoppingListActivity extends AppCompatActivity
             public void onClick(View v)
             {
                 returnShoppingListFromActivity();
+            }
+        });
+
+        adapter.setSuggestionButtonsFunction(new SuggestionButtonsFunction()
+        {
+            @Override
+            public void onConfirmSuggestionClick(View view, ShoppingListItem shoppingListItem)
+            {
+                adapter.changeIsSuggestion(shoppingListItem, false);
+                Snackbar.make(view, "Suggestion added", Snackbar.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onRemoveSuggestionClick(View view, ShoppingListItem shoppingListItem)
+            {
+                adapter.removeItem(shoppingListItem);
+                updateViewVisibility();
+                Snackbar.make(view, "Suggestion removed", Snackbar.LENGTH_LONG).show();
             }
         });
 
@@ -186,11 +215,11 @@ public class ShoppingListActivity extends AppCompatActivity
 
                 ArrayList<ShoppingListItem> shoppingListItems = adapter.getDataset();
 
-                for (int i = 0; i < shoppingListItems.size(); i++)
+                for (ShoppingListItem oldShoppingListItem : shoppingListItems)
                 {
-                    if (shoppingListItems.get(i).getTpnb() == itemTpnbToReplace)
+                    if (oldShoppingListItem.getTpnb() == itemTpnbToReplace)
                     {
-                        adapter.changeItem(i, result);
+                        adapter.changeItem(oldShoppingListItem, result);
                     }
                 }
             }
@@ -301,7 +330,27 @@ public class ShoppingListActivity extends AppCompatActivity
             shoppingList.setDate(new Date());
         }
 
-        resultIntent.putExtra(MainActivity.INTENT_TAG_SHOPPING_LIST_DATA, shoppingList);
+        ShoppingList returnShoppingList;
+
+        if (isNew)
+        {
+            returnShoppingList = shoppingList.deepCopy();
+            ArrayList<ShoppingListItem> returnShoppingListItems = returnShoppingList.getItems();
+
+            for (ShoppingListItem shoppingListItem : new ArrayList<>(returnShoppingListItems))
+            {
+                if (adapter.isSuggestion(shoppingListItem.getTpnb()))
+                {
+                    returnShoppingListItems.remove(shoppingListItem);
+                }
+            }
+        }
+        else
+        {
+            returnShoppingList = shoppingList;
+        }
+
+        resultIntent.putExtra(MainActivity.INTENT_TAG_SHOPPING_LIST_DATA, returnShoppingList);
         setResult(Activity.RESULT_OK, resultIntent);
         finish();
     }

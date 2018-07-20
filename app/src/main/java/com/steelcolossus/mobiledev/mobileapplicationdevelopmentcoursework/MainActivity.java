@@ -208,7 +208,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 productValues.put(ShoppingListContract.Product.PRICE, item.getPrice());
                 productValues.put(ShoppingListContract.Product.IMAGE_URL, item.getImageUrl());
 
-                Cursor existingProductCursor = contentResolver.query(ShoppingListContract.Product.CONTENT_URI, ShoppingListContract.Product.PROJECTION_ALL, ShoppingListContract.Product.TPNB + " = ?", new String[]{ Integer.toString(item.getTpnb()) }, ShoppingListContract.Product.SORT_ORDER_DEFAULT);
+                Cursor existingProductCursor = contentResolver.query(ShoppingListContract.Product.CONTENT_URI, ShoppingListContract.Product.PROJECTION_ALL, ShoppingListContract.Product.TPNB + " = ?", new String[] { Integer.toString(item.getTpnb()) }, ShoppingListContract.Product.SORT_ORDER_DEFAULT);
 
                 int productId = -1;
 

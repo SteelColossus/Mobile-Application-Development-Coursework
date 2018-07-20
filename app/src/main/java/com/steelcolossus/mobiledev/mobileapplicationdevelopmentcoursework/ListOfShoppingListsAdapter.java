@@ -27,11 +27,9 @@ interface ShoppingListContextMenuFunction
 public class ListOfShoppingListsAdapter extends RecyclerView.Adapter<ListOfShoppingListsAdapter.ViewHolder>
 {
     private final ArrayList<ShoppingList> dataset;
-
+    private final NumberFormat priceFormatter;
     private ShoppingListFunction onClickFunction;
     private ShoppingListContextMenuFunction menuFunction;
-
-    private final NumberFormat priceFormatter;
 
     ListOfShoppingListsAdapter(ArrayList<ShoppingList> dataset)
     {

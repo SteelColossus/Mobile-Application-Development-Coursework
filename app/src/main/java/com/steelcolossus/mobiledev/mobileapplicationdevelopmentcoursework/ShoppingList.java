@@ -115,7 +115,7 @@ public class ShoppingList implements Parcelable
         {
             ShoppingList otherShoppingList = (ShoppingList)obj;
 
-            return id == otherShoppingList.getId();
+            return items.equals(otherShoppingList.getItems());
         }
         else
         {

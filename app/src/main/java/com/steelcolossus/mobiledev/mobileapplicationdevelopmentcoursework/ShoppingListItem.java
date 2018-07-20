@@ -110,7 +110,7 @@ public class ShoppingListItem implements Parcelable
         {
             ShoppingListItem otherShoppingListItem = (ShoppingListItem)obj;
 
-            return tpnb == otherShoppingListItem.getTpnb() && searchQuery.equals(otherShoppingListItem.getSearchQuery()) && bought == otherShoppingListItem.isBought();
+            return tpnb == otherShoppingListItem.getTpnb() && bought == otherShoppingListItem.isBought() && (searchQuery == null || searchQuery.equals(otherShoppingListItem.getSearchQuery()));
         }
         else
         {

@@ -17,7 +17,7 @@ public class ProductSuggestionsProvider
         this.contentResolver = contentResolver;
     }
 
-    public Map<ShoppingListItem, Integer> getProductsByTimesBought()
+    public Map<ShoppingListItem, Integer> getProductsByOccasionsBought()
     {
         Map<ShoppingListItem, Integer> boughtProducts = new HashMap<>();
 
@@ -27,7 +27,7 @@ public class ProductSuggestionsProvider
         {
             while (productCursor.moveToNext())
             {
-                Cursor shoppingListProductCursor = contentResolver.query(ShoppingListContract.ShoppingListProduct.CONTENT_URI_DISTINCT_SHOPS, ShoppingListContract.ShoppingListProduct.PROJECTION_ALL, ShoppingListContract.ShoppingListProduct.PRODUCT_ID + " = ?", new String[]{ Integer.toString(productCursor.getInt(0)) }, ShoppingListContract.ShoppingListProduct.SORT_ORDER_DEFAULT);
+                Cursor shoppingListProductCursor = contentResolver.query(ShoppingListContract.ShoppingListProduct.CONTENT_URI_DISTINCT_SHOPS, ShoppingListContract.ShoppingListProduct.PROJECTION_ALL, ShoppingListContract.ShoppingListProduct.PRODUCT_ID + " = ?", new String[] { Integer.toString(productCursor.getInt(0)) }, ShoppingListContract.ShoppingListProduct.SORT_ORDER_DEFAULT);
 
                 if (shoppingListProductCursor != null)
                 {
