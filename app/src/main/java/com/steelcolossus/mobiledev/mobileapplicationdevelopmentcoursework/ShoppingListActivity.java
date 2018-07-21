@@ -195,6 +195,11 @@ public class ShoppingListActivity extends AppCompatActivity
             {
                 ShoppingListItem result = data.getParcelableExtra(SearchProductsActivity.INTENT_TAG_PRODUCT);
 
+                if (adapter.isSuggestion(result.getTpnb()))
+                {
+                    adapter.removeItem(result.getTpnb());
+                }
+
                 adapter.addItem(result);
 
                 updateViewVisibility();

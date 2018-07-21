@@ -224,6 +224,18 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
         notifyItemRemoved(index);
     }
 
+    public void removeItem(int tpnb)
+    {
+        for (ShoppingListItem shoppingListItem : dataset)
+        {
+            if (shoppingListItem.getTpnb() == tpnb)
+            {
+                removeItem(shoppingListItem);
+                return;
+            }
+        }
+    }
+
     public void changeItem(ShoppingListItem oldShoppingListItem, ShoppingListItem newShoppingListItem)
     {
         int index = dataset.indexOf(oldShoppingListItem);
