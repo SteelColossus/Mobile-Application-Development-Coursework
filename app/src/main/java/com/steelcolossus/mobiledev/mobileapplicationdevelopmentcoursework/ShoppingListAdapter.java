@@ -16,6 +16,7 @@ import com.bumptech.glide.Glide;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Locale;
 
 interface ShoppingListItemContextMenuFunction
@@ -125,6 +126,8 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
                 {
                     if (suggestionButtonsFunction != null)
                     {
+                        changeIsSuggestion(shoppingListItem, false);
+                        moveItemToEnd(shoppingListItem);
                         suggestionButtonsFunction.onConfirmSuggestionClick(v, shoppingListItem);
                     }
                 }
@@ -137,6 +140,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
                 {
                     if (suggestionButtonsFunction != null)
                     {
+                        removeItem(shoppingListItem);
                         suggestionButtonsFunction.onRemoveSuggestionClick(v, shoppingListItem);
                     }
                 }
@@ -236,6 +240,15 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
 
         suggestionMap.put(shoppingListItem.getTpnb(), isSuggestion);
         notifyItemChanged(index);
+    }
+
+    public void moveItemToEnd(ShoppingListItem shoppingListItem)
+    {
+        int index = dataset.indexOf(shoppingListItem);
+
+        dataset.remove(index);
+        dataset.add(shoppingListItem);
+        notifyItemMoved(index, dataset.size() - 1);
     }
 
     // A view holder used to store the elements of the recycler view

@@ -100,14 +100,10 @@ public class ShoppingListActivity extends AppCompatActivity
         if (isNew)
         {
             ProductSuggestionsProvider productSuggestionsProvider = new ProductSuggestionsProvider(getContentResolver());
-            Map<ShoppingListItem, Integer> previousProductsMap = productSuggestionsProvider.getProductsByOccasionsBought();
 
-            for (Map.Entry<ShoppingListItem, Integer> previousProductEntry : previousProductsMap.entrySet())
+            for (ShoppingListItem shoppingListItem : productSuggestionsProvider.getSuggestedProducts())
             {
-                if (previousProductEntry.getValue() >= 2)
-                {
-                    adapter.addItem(previousProductEntry.getKey(), true);
-                }
+                adapter.addItem(shoppingListItem, true);
             }
         }
 
@@ -141,14 +137,13 @@ public class ShoppingListActivity extends AppCompatActivity
             @Override
             public void onConfirmSuggestionClick(View view, ShoppingListItem shoppingListItem)
             {
-                adapter.changeIsSuggestion(shoppingListItem, false);
+                updateViewVisibility();
                 Snackbar.make(view, "Suggestion added", Snackbar.LENGTH_LONG).show();
             }
 
             @Override
             public void onRemoveSuggestionClick(View view, ShoppingListItem shoppingListItem)
             {
-                adapter.removeItem(shoppingListItem);
                 updateViewVisibility();
                 Snackbar.make(view, "Suggestion removed", Snackbar.LENGTH_LONG).show();
             }
@@ -285,7 +280,7 @@ public class ShoppingListActivity extends AppCompatActivity
         findViewById(R.id.shoppingListRecyclerView).setVisibility(itemCount > 0 ? View.VISIBLE : View.INVISIBLE);
 
         NumberFormat formatter = NumberFormat.getCurrencyInstance(Locale.UK);
-        String priceText = formatter.format(shoppingList.getTotalPrice());
+        String priceText = formatter.format(getTotalPrice());
         TextView totalPriceTextView = findViewById(R.id.totalPriceTextView);
 
         totalPriceTextView.setText(priceText);
@@ -319,6 +314,21 @@ public class ShoppingListActivity extends AppCompatActivity
         {
             backNavigationCallback.onSaveUnnecessary();
         }
+    }
+
+    private float getTotalPrice()
+    {
+        float totalPrice = 0;
+
+        for (ShoppingListItem shoppingListItem : shoppingList.getItems())
+        {
+            if (!adapter.isSuggestion(shoppingListItem.getTpnb()))
+            {
+                totalPrice += shoppingListItem.getPrice();
+            }
+        }
+
+        return totalPrice;
     }
 
     private void returnShoppingListFromActivity()

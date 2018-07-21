@@ -5,6 +5,7 @@ import android.database.Cursor;
 
 import com.steelcolossus.mobiledev.mobileapplicationdevelopmentcoursework.provider.ShoppingListContract;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,7 +18,7 @@ public class ProductSuggestionsProvider
         this.contentResolver = contentResolver;
     }
 
-    public Map<ShoppingListItem, Integer> getProductsByOccasionsBought()
+    private Map<ShoppingListItem, Integer> getProductsByOccasionsBought()
     {
         Map<ShoppingListItem, Integer> boughtProducts = new HashMap<>();
 
@@ -45,5 +46,22 @@ public class ProductSuggestionsProvider
         }
 
         return boughtProducts;
+    }
+
+    public ArrayList<ShoppingListItem> getSuggestedProducts()
+    {
+        ArrayList<ShoppingListItem> productSuggestions = new ArrayList<>();
+
+        Map<ShoppingListItem, Integer> previousProductsMap = getProductsByOccasionsBought();
+
+        for (Map.Entry<ShoppingListItem, Integer> previousProductEntry : previousProductsMap.entrySet())
+        {
+            if (previousProductEntry.getValue() >= 2)
+            {
+                productSuggestions.add(previousProductEntry.getKey());
+            }
+        }
+
+        return productSuggestions;
     }
 }
