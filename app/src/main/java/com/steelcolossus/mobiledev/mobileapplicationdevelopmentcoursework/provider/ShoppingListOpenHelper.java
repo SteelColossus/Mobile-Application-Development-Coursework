@@ -37,7 +37,7 @@ public class ShoppingListOpenHelper extends SQLiteOpenHelper
 
             db.execSQL(DBSchema.SQL_CREATE_SHOPPINGLISTPRODUCT_TABLE);
 
-            Cursor productCursor = db.query(DBSchema.PRODUCT_TABLE_NAME, new String[]{ ShoppingListContract.Product._ID, ShoppingListContract.ShoppingListProduct.SHOPPINGLIST_ID, ShoppingListContract.ShoppingListProduct.SEARCH_QUERY, ShoppingListContract.ShoppingListProduct.BOUGHT, ShoppingListContract.Product.TPNB }, null, null, null, null, ShoppingListContract.Product._ID + " DESC");
+            Cursor productCursor = db.query(DBSchema.PRODUCT_TABLE_NAME, new String[] { ShoppingListContract.Product._ID, ShoppingListContract.ShoppingListProduct.SHOPPINGLIST_ID, ShoppingListContract.ShoppingListProduct.SEARCH_QUERY, ShoppingListContract.ShoppingListProduct.BOUGHT, ShoppingListContract.Product.TPNB }, null, null, null, null, ShoppingListContract.Product._ID + " DESC");
 
             while (productCursor.moveToNext())
             {
@@ -47,7 +47,7 @@ public class ShoppingListOpenHelper extends SQLiteOpenHelper
 
                 if (existingProductId >= 0)
                 {
-                    db.delete(DBSchema.PRODUCT_TABLE_NAME, ShoppingListContract.Product._ID + " = ?", new String[]{ Integer.toString(currentProductId) });
+                    db.delete(DBSchema.PRODUCT_TABLE_NAME, ShoppingListContract.Product._ID + " = ?", new String[] { Integer.toString(currentProductId) });
 
                     currentProductId = existingProductId;
                 }

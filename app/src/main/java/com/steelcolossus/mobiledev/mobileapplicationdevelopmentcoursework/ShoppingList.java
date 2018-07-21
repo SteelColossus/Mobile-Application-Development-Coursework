@@ -53,6 +53,11 @@ public class ShoppingList implements Parcelable
         return items;
     }
 
+    public void setItems(ArrayList<ShoppingListItem> items)
+    {
+        this.items = new ArrayList<>(items);
+    }
+
     public int getId()
     {
         return id;

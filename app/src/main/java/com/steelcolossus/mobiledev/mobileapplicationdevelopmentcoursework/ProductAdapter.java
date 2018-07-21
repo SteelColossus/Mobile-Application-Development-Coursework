@@ -20,19 +20,13 @@ interface ProductFunction
     void run(ProductQueryItem productQueryItem);
 }
 
-public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder>
+public class ProductAdapter extends RecyclerViewAdapter<ProductAdapter.ViewHolder, ProductQueryItem>
 {
-    private final ArrayList<ProductQueryItem> dataset;
     private ProductFunction onClickFunction;
 
     ProductAdapter(ArrayList<ProductQueryItem> dataset)
     {
-        this.dataset = dataset;
-    }
-
-    public ArrayList<ProductQueryItem> getDataset()
-    {
-        return dataset;
+        super(dataset);
     }
 
     @NonNull
@@ -71,43 +65,6 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                 }
             }
         });
-    }
-
-    @Override
-    public int getItemCount()
-    {
-        return dataset.size();
-    }
-
-    public void setItems(ArrayList<ProductQueryItem> dataset)
-    {
-        while (this.dataset.size() > 0)
-        {
-            removeItem(0);
-        }
-
-        for (ProductQueryItem productQueryItem : dataset)
-        {
-            addItem(productQueryItem);
-        }
-    }
-
-    public void addItem(ProductQueryItem productQueryItem)
-    {
-        dataset.add(productQueryItem);
-        notifyItemInserted(getItemCount() - 1);
-    }
-
-    public void removeItem(ProductQueryItem productQueryItem)
-    {
-        int index = dataset.indexOf(productQueryItem);
-        removeItem(index);
-    }
-
-    private void removeItem(int index)
-    {
-        dataset.remove(index);
-        notifyItemRemoved(index);
     }
 
     public void setOnClickFunction(ProductFunction onClickFunction)

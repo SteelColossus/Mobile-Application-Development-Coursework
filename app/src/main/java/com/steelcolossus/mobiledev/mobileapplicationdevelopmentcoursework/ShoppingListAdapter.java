@@ -16,7 +16,6 @@ import com.bumptech.glide.Glide;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Locale;
 
 interface ShoppingListItemContextMenuFunction
@@ -31,9 +30,8 @@ interface SuggestionButtonsFunction
     void onRemoveSuggestionClick(View view, ShoppingListItem shoppingListItem);
 }
 
-public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapter.ViewHolder>
+public class ShoppingListAdapter extends RecyclerViewAdapter<ShoppingListAdapter.ViewHolder, ShoppingListItem>
 {
-    private final ArrayList<ShoppingListItem> dataset;
     private final SparseBooleanArray suggestionMap;
     private final boolean isNew;
 
@@ -42,7 +40,8 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
 
     ShoppingListAdapter(ArrayList<ShoppingListItem> dataset, boolean isNew)
     {
-        this.dataset = dataset;
+        super(dataset);
+
         this.isNew = isNew;
 
         suggestionMap = new SparseBooleanArray();
@@ -51,11 +50,6 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
         {
             suggestionMap.append(shoppingListItem.getTpnb(), false);
         }
-    }
-
-    public ArrayList<ShoppingListItem> getDataset()
-    {
-        return dataset;
     }
 
     public void setMenuFunction(ShoppingListItemContextMenuFunction menuFunction)
@@ -79,7 +73,7 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
     }
 
     @Override
-    public void onBindViewHolder(@NonNull final ViewHolder holder, final int position)
+    public void onBindViewHolder(@NonNull final ViewHolder holder, int position)
     {
         final ShoppingListItem shoppingListItem = dataset.get(position);
 
@@ -126,8 +120,9 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
                 {
                     if (suggestionButtonsFunction != null)
                     {
-                        changeIsSuggestion(shoppingListItem, false);
-                        moveItemToEnd(shoppingListItem);
+                        int position = holder.getAdapterPosition();
+                        changeIsSuggestion(position, false);
+                        moveItemToEnd(position);
                         suggestionButtonsFunction.onConfirmSuggestionClick(v, shoppingListItem);
                     }
                 }
@@ -140,7 +135,8 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
                 {
                     if (suggestionButtonsFunction != null)
                     {
-                        removeItem(shoppingListItem);
+                        int position = holder.getAdapterPosition();
+                        removeItem(position);
                         suggestionButtonsFunction.onRemoveSuggestionClick(v, shoppingListItem);
                     }
                 }
@@ -192,17 +188,12 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
         }
     }
 
-    @Override
-    public int getItemCount()
-    {
-        return dataset.size();
-    }
-
     public boolean isSuggestion(int tpnb)
     {
         return suggestionMap.get(tpnb);
     }
 
+    @Override
     public void addItem(ShoppingListItem shoppingListItem)
     {
         addItem(shoppingListItem, false);
@@ -210,57 +201,44 @@ public class ShoppingListAdapter extends RecyclerView.Adapter<ShoppingListAdapte
 
     public void addItem(ShoppingListItem shoppingListItem, boolean isSuggestion)
     {
-        dataset.add(shoppingListItem);
+        super.addItem(shoppingListItem);
         suggestionMap.put(shoppingListItem.getTpnb(), isSuggestion);
-        notifyItemInserted(getItemCount() - 1);
     }
 
-    public void removeItem(ShoppingListItem shoppingListItem)
+    @Override
+    public void removeItem(int position)
     {
-        int index = dataset.indexOf(shoppingListItem);
+        super.removeItem(position);
 
-        dataset.remove(index);
+        ShoppingListItem shoppingListItem = dataset.get(position);
         suggestionMap.delete(shoppingListItem.getTpnb());
-        notifyItemRemoved(index);
     }
 
-    public void removeItem(int tpnb)
+    @Override
+    public void changeItem(int position, ShoppingListItem shoppingListItem)
     {
-        for (ShoppingListItem shoppingListItem : dataset)
-        {
-            if (shoppingListItem.getTpnb() == tpnb)
-            {
-                removeItem(shoppingListItem);
-                return;
-            }
-        }
-    }
+        ShoppingListItem oldShoppingListItem = dataset.get(position);
 
-    public void changeItem(ShoppingListItem oldShoppingListItem, ShoppingListItem newShoppingListItem)
-    {
-        int index = dataset.indexOf(oldShoppingListItem);
+        super.changeItem(position, shoppingListItem);
 
-        dataset.set(index, newShoppingListItem);
         suggestionMap.delete(oldShoppingListItem.getTpnb());
-        suggestionMap.put(newShoppingListItem.getTpnb(), false);
-        notifyItemChanged(index);
+        suggestionMap.put(shoppingListItem.getTpnb(), false);
     }
 
-    public void changeIsSuggestion(ShoppingListItem shoppingListItem, boolean isSuggestion)
+    public void changeIsSuggestion(int position, boolean isSuggestion)
     {
-        int index = dataset.indexOf(shoppingListItem);
-
+        ShoppingListItem shoppingListItem = dataset.get(position);
         suggestionMap.put(shoppingListItem.getTpnb(), isSuggestion);
-        notifyItemChanged(index);
+        notifyItemChanged(position);
     }
 
-    public void moveItemToEnd(ShoppingListItem shoppingListItem)
+    public void moveItemToEnd(int position)
     {
-        int index = dataset.indexOf(shoppingListItem);
+        ShoppingListItem shoppingListItem = dataset.get(position);
 
-        dataset.remove(index);
+        dataset.remove(position);
         dataset.add(shoppingListItem);
-        notifyItemMoved(index, dataset.size() - 1);
+        notifyItemMoved(position, getItemCount() - 1);
     }
 
     // A view holder used to store the elements of the recycler view

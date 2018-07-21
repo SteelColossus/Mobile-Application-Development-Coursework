@@ -21,7 +21,6 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Map;
 
 interface BackNavigationCallback
 {
@@ -38,10 +37,9 @@ public class ShoppingListActivity extends AppCompatActivity
     private static final int CHOOSE_PRODUCT_REQUEST = 1;
     private static final int CHANGE_PRODUCT_REQUEST = 2;
     private static final String INSTANCE_STATE_TAG_SHOPPING_LIST = INTENT_TAG_SHOPPING_LIST_DATA;
-    private static final String INSTANCE_STATE_TAG_INITIAL_SHOPPING_LIST = INSTANCE_STATE_TAG_SHOPPING_LIST + "Initial";
+    private static final String INSTANCE_STATE_TAG_SHOPPING_LIST_ITEMS = INTENT_TAG_SHOPPING_LIST_DATA + "Items";
     private ShoppingListAdapter adapter;
     private ShoppingList initialShoppingList;
-    private ShoppingList shoppingList;
     private boolean isNew;
 
     @Override
@@ -64,26 +62,23 @@ public class ShoppingListActivity extends AppCompatActivity
 
         if (savedInstanceState != null)
         {
-            shoppingList = savedInstanceState.getParcelable(INSTANCE_STATE_TAG_SHOPPING_LIST);
-            initialShoppingList = savedInstanceState.getParcelable(INSTANCE_STATE_TAG_INITIAL_SHOPPING_LIST);
+            initialShoppingList = savedInstanceState.getParcelable(INSTANCE_STATE_TAG_SHOPPING_LIST);
         }
         else
         {
             if (isNew)
             {
-                shoppingList = new ShoppingList(-1, intent.getStringExtra(MainActivity.INTENT_TAG_SHOPPING_LIST_NAME), new Date());
-                initialShoppingList = null;
+                initialShoppingList = new ShoppingList(-1, intent.getStringExtra(MainActivity.INTENT_TAG_SHOPPING_LIST_NAME), new Date());
             }
             else
             {
-                shoppingList = intent.getParcelableExtra(MainActivity.INTENT_TAG_SHOPPING_LIST_DATA);
-                initialShoppingList = shoppingList.deepCopy();
+                initialShoppingList = intent.getParcelableExtra(MainActivity.INTENT_TAG_SHOPPING_LIST_DATA);
             }
         }
 
-        if (shoppingList != null)
+        if (initialShoppingList != null)
         {
-            setTitle(shoppingList.getName());
+            setTitle(initialShoppingList.getName());
         }
 
         RecyclerView recyclerView = findViewById(R.id.shoppingListRecyclerView);
@@ -93,8 +88,19 @@ public class ShoppingListActivity extends AppCompatActivity
         // Set a linear layout manager for the recycler view
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        ArrayList<ShoppingListItem> shoppingListItems;
+
+        if (savedInstanceState != null)
+        {
+            shoppingListItems = savedInstanceState.getParcelableArrayList(INSTANCE_STATE_TAG_SHOPPING_LIST_ITEMS);
+        }
+        else
+        {
+            shoppingListItems = new ArrayList<>(initialShoppingList.getItems());
+        }
+
         // Set up the adapter
-        adapter = new ShoppingListAdapter(shoppingList.getItems(), isNew);
+        adapter = new ShoppingListAdapter(shoppingListItems, isNew);
         recyclerView.setAdapter(adapter);
 
         if (isNew)
@@ -157,7 +163,7 @@ public class ShoppingListActivity extends AppCompatActivity
                 switch (menuItemId)
                 {
                     case R.id.remove:
-                        adapter.removeItem(shoppingListItem);
+                        adapter.removeItem(adapter.indexOf(shoppingListItem));
                         updateViewVisibility();
                         Snackbar.make(view, shoppingListItem.getName() + " removed", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                         return true;
@@ -178,8 +184,8 @@ public class ShoppingListActivity extends AppCompatActivity
     @Override
     protected void onSaveInstanceState(Bundle outState)
     {
-        outState.putParcelable(INSTANCE_STATE_TAG_SHOPPING_LIST, shoppingList);
-        outState.putParcelable(INSTANCE_STATE_TAG_INITIAL_SHOPPING_LIST, initialShoppingList);
+        outState.putParcelable(INSTANCE_STATE_TAG_SHOPPING_LIST, initialShoppingList);
+        outState.putParcelableArrayList(INSTANCE_STATE_TAG_SHOPPING_LIST_ITEMS, adapter.getDataset());
 
         super.onSaveInstanceState(outState);
     }
@@ -219,7 +225,7 @@ public class ShoppingListActivity extends AppCompatActivity
                 {
                     if (oldShoppingListItem.getTpnb() == itemTpnbToReplace)
                     {
-                        adapter.changeItem(oldShoppingListItem, result);
+                        adapter.changeItem(adapter.indexOf(oldShoppingListItem), result);
                     }
                 }
             }
@@ -293,7 +299,7 @@ public class ShoppingListActivity extends AppCompatActivity
 
     private void showSaveShoppingListDialog(final BackNavigationCallback backNavigationCallback)
     {
-        if (initialShoppingList == null || !shoppingList.equals(initialShoppingList))
+        if (!initialShoppingList.getItems().equals(adapter.getDataset()))
         {
             final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
 
@@ -325,7 +331,7 @@ public class ShoppingListActivity extends AppCompatActivity
     {
         float totalPrice = 0;
 
-        for (ShoppingListItem shoppingListItem : shoppingList.getItems())
+        for (ShoppingListItem shoppingListItem : adapter.getDataset())
         {
             if (!adapter.isSuggestion(shoppingListItem.getTpnb()))
             {
@@ -342,30 +348,25 @@ public class ShoppingListActivity extends AppCompatActivity
 
         if (isNew)
         {
-            shoppingList.setDate(new Date());
+            initialShoppingList.setDate(new Date());
         }
 
-        ShoppingList returnShoppingList;
+        ArrayList<ShoppingListItem> shoppingListItems = adapter.getDataset();
 
         if (isNew)
         {
-            returnShoppingList = shoppingList.deepCopy();
-            ArrayList<ShoppingListItem> returnShoppingListItems = returnShoppingList.getItems();
-
-            for (ShoppingListItem shoppingListItem : new ArrayList<>(returnShoppingListItems))
+            for (ShoppingListItem shoppingListItem : new ArrayList<>(shoppingListItems))
             {
                 if (adapter.isSuggestion(shoppingListItem.getTpnb()))
                 {
-                    returnShoppingListItems.remove(shoppingListItem);
+                    shoppingListItems.remove(shoppingListItem);
                 }
             }
         }
-        else
-        {
-            returnShoppingList = shoppingList;
-        }
 
-        resultIntent.putExtra(MainActivity.INTENT_TAG_SHOPPING_LIST_DATA, returnShoppingList);
+        initialShoppingList.setItems(shoppingListItems);
+
+        resultIntent.putExtra(MainActivity.INTENT_TAG_SHOPPING_LIST_DATA, initialShoppingList);
         setResult(Activity.RESULT_OK, resultIntent);
         finish();
     }

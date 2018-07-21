@@ -24,16 +24,15 @@ interface ShoppingListContextMenuFunction
     boolean onMenuItemClick(int menuItemId, View view, ShoppingList shoppingList);
 }
 
-public class ListOfShoppingListsAdapter extends RecyclerView.Adapter<ListOfShoppingListsAdapter.ViewHolder>
+public class ListOfShoppingListsAdapter extends RecyclerViewAdapter<ListOfShoppingListsAdapter.ViewHolder, ShoppingList>
 {
-    private final ArrayList<ShoppingList> dataset;
     private final NumberFormat priceFormatter;
     private ShoppingListFunction onClickFunction;
     private ShoppingListContextMenuFunction menuFunction;
 
     ListOfShoppingListsAdapter(ArrayList<ShoppingList> dataset)
     {
-        this.dataset = dataset;
+        super(dataset);
         priceFormatter = NumberFormat.getCurrencyInstance(Locale.UK);
     }
 
@@ -110,42 +109,6 @@ public class ListOfShoppingListsAdapter extends RecyclerView.Adapter<ListOfShopp
                 return true;
             }
         });
-    }
-
-    @Override
-    public int getItemCount()
-    {
-        return dataset.size();
-    }
-
-    private void addItem(ShoppingList shoppingList)
-    {
-        dataset.add(shoppingList);
-        notifyItemInserted(getItemCount() - 1);
-    }
-
-    private void removeItem(int index)
-    {
-        dataset.remove(index);
-        notifyItemRemoved(index);
-    }
-
-    public void clearItems()
-    {
-        while (this.dataset.size() > 0)
-        {
-            removeItem(0);
-        }
-    }
-
-    public void setItems(ArrayList<ShoppingList> dataset)
-    {
-        clearItems();
-
-        for (ShoppingList shoppingList : dataset)
-        {
-            addItem(shoppingList);
-        }
     }
 
     // A view holder used to store the elements of the recycler view
