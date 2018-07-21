@@ -297,9 +297,24 @@ public class ShoppingListActivity extends AppCompatActivity
         totalPriceTextView.setText(priceText);
     }
 
+    private ArrayList<ShoppingListItem> getDatasetWithoutSuggestions()
+    {
+        ArrayList<ShoppingListItem> shoppingListItems = adapter.getDataset();
+
+        for (ShoppingListItem shoppingListItem : new ArrayList<>(shoppingListItems))
+        {
+            if (adapter.isSuggestion(shoppingListItem.getTpnb()))
+            {
+                shoppingListItems.remove(shoppingListItem);
+            }
+        }
+
+        return shoppingListItems;
+    }
+
     private void showSaveShoppingListDialog(final BackNavigationCallback backNavigationCallback)
     {
-        if (!initialShoppingList.getItems().equals(adapter.getDataset()))
+        if (!initialShoppingList.getItems().equals(getDatasetWithoutSuggestions()))
         {
             final AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
 
@@ -351,17 +366,15 @@ public class ShoppingListActivity extends AppCompatActivity
             initialShoppingList.setDate(new Date());
         }
 
-        ArrayList<ShoppingListItem> shoppingListItems = adapter.getDataset();
+        ArrayList<ShoppingListItem> shoppingListItems;
 
         if (isNew)
         {
-            for (ShoppingListItem shoppingListItem : new ArrayList<>(shoppingListItems))
-            {
-                if (adapter.isSuggestion(shoppingListItem.getTpnb()))
-                {
-                    shoppingListItems.remove(shoppingListItem);
-                }
-            }
+            shoppingListItems = getDatasetWithoutSuggestions();
+        }
+        else
+        {
+            shoppingListItems = adapter.getDataset();
         }
 
         initialShoppingList.setItems(shoppingListItems);
