@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class ProductSuggestionsProvider
 {
-    private ContentResolver contentResolver;
+    private final ContentResolver contentResolver;
 
     public ProductSuggestionsProvider(ContentResolver contentResolver)
     {

@@ -23,7 +23,7 @@ public class ShoppingList implements Parcelable
         }
     };
 
-    private int id;
+    private final int id;
     private String name;
     private Date date;
     private ArrayList<ShoppingListItem> items;

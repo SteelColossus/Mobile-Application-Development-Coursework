@@ -224,7 +224,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
                     if (productUri != null)
                     {
-                        productId = Integer.parseInt(productUri.getLastPathSegment());
+                        String productLastSegment = productUri.getLastPathSegment();
+
+                        if (productLastSegment != null)
+                        {
+                            productId = Integer.parseInt(productLastSegment);
+                        }
                     }
                 }
 
@@ -237,12 +242,17 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 {
                     ContentValues newShoppingListProduct = new ContentValues();
 
-                    newShoppingListProduct.put(ShoppingListContract.ShoppingListProduct.SHOPPINGLIST_ID, Integer.parseInt(shoppingListUri.getLastPathSegment()));
-                    newShoppingListProduct.put(ShoppingListContract.ShoppingListProduct.PRODUCT_ID, productId);
-                    newShoppingListProduct.put(ShoppingListContract.ShoppingListProduct.SEARCH_QUERY, item.getSearchQuery());
-                    newShoppingListProduct.put(ShoppingListContract.ShoppingListProduct.BOUGHT, item.isBought());
+                    String shoppingListLastSegment = shoppingListUri.getLastPathSegment();
 
-                    contentResolver.insert(ShoppingListContract.ShoppingListProduct.CONTENT_URI, newShoppingListProduct);
+                    if (shoppingListLastSegment != null)
+                    {
+                        newShoppingListProduct.put(ShoppingListContract.ShoppingListProduct.SHOPPINGLIST_ID, Integer.parseInt(shoppingListLastSegment));
+                        newShoppingListProduct.put(ShoppingListContract.ShoppingListProduct.PRODUCT_ID, productId);
+                        newShoppingListProduct.put(ShoppingListContract.ShoppingListProduct.SEARCH_QUERY, item.getSearchQuery());
+                        newShoppingListProduct.put(ShoppingListContract.ShoppingListProduct.BOUGHT, item.isBought());
+
+                        contentResolver.insert(ShoppingListContract.ShoppingListProduct.CONTENT_URI, newShoppingListProduct);
+                    }
                 }
             }
         }

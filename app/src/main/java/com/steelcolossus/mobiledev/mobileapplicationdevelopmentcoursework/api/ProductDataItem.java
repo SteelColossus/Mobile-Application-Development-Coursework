@@ -2,7 +2,7 @@ package com.steelcolossus.mobiledev.mobileapplicationdevelopmentcoursework.api;
 
 public class ProductDataItem
 {
-    private String description;
+    private final String description;
 
     public ProductDataItem(String description)
     {

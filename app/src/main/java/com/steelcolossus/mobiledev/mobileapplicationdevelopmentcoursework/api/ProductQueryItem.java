@@ -20,11 +20,11 @@ public class ProductQueryItem implements Parcelable
         }
     };
 
-    private int tpnb;
-    private String name;
-    private String department;
-    private float price;
-    private String image;
+    private final int tpnb;
+    private final String name;
+    private final String department;
+    private final float price;
+    private final String image;
 
     public ProductQueryItem(int tpnb, String name, String department, float price, String image)
     {

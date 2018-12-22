@@ -22,11 +22,11 @@ public class ShoppingListItem implements Parcelable
         }
     };
 
-    private int tpnb;
-    private String name;
-    private String department;
-    private float price;
-    private String imageUrl;
+    private final int tpnb;
+    private final String name;
+    private final String department;
+    private final float price;
+    private final String imageUrl;
     private String searchQuery;
     private boolean bought;
 
