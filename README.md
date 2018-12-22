@@ -1,2 +1,2 @@
 # Mobile Application Development Coursework
-This is the coursework for the Mobile Application Development module.
+This is my coursework for the Mobile Application Development module.
