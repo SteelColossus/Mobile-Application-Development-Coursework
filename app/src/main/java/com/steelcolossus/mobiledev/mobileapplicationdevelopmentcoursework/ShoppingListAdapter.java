@@ -208,9 +208,9 @@ public class ShoppingListAdapter extends RecyclerViewAdapter<ShoppingListAdapter
     @Override
     public void removeItem(int position)
     {
-        super.removeItem(position);
-
         ShoppingListItem shoppingListItem = dataset.get(position);
+
+        super.removeItem(position);
         suggestionMap.delete(shoppingListItem.getTpnb());
     }
 
