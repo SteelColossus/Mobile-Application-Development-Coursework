@@ -5,12 +5,6 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,6 +12,13 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.snackbar.Snackbar;
 import com.steelcolossus.mobiledev.mobileapplicationdevelopmentcoursework.api.ProductDataCallback;
 import com.steelcolossus.mobiledev.mobileapplicationdevelopmentcoursework.api.ProductDataItem;
 import com.steelcolossus.mobiledev.mobileapplicationdevelopmentcoursework.api.ProductQuery;
@@ -165,6 +166,8 @@ public class SearchProductsActivity extends AppCompatActivity
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
+        super.onActivityResult(requestCode, resultCode, data);
+
         IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
         final Context context = this;
 
@@ -210,6 +213,8 @@ public class SearchProductsActivity extends AppCompatActivity
     @Override
     protected void onNewIntent(Intent intent)
     {
+        super.onNewIntent(intent);
+
         handleIntent(intent);
     }
 

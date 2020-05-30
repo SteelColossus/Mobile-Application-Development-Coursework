@@ -13,5 +13,6 @@
         android:layout_marginRight="16dp"
         android:layout_marginTop="8dp"
         android:hint="@string/dialog_shoppinglist_name"
-        android:inputType="text" />
+        android:inputType="text"
+        android:importantForAutofill="no" />
 </LinearLayout>
