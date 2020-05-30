@@ -10,11 +10,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -105,13 +105,15 @@ public class SearchProductsActivity extends AppCompatActivity
         SearchManager searchManager = (SearchManager)getSystemService(Context.SEARCH_SERVICE);
         SearchView searchView = (SearchView)menu.findItem(R.id.search).getActionView();
         this.searchView = searchView;
-        searchView.setIconifiedByDefault(false);
-        //searchView.setMaxWidth(searchView.getContext().getResources().getDisplayMetrics().widthPixels);
 
         if (searchManager != null)
         {
             searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         }
+
+        searchView.setIconifiedByDefault(false);
+        searchView.requestFocus();
+        //searchView.setMaxWidth(searchView.getContext().getResources().getDisplayMetrics().widthPixels);
 
         if (menuCompletedCallback != null)
         {
