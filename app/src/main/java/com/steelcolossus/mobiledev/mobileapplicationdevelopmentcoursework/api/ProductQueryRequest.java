@@ -5,6 +5,7 @@ import com.android.volley.ParseError;
 import com.android.volley.Response;
 import com.android.volley.toolbox.HttpHeaderParser;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSyntaxException;
 
@@ -28,6 +29,23 @@ public class ProductQueryRequest extends GsonRequest<ProductQuery>
 
             JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
             JsonObject productsObject = jsonObject.getAsJsonObject("uk").getAsJsonObject("ghs").getAsJsonObject("products");
+
+            // Convert all image urls with HTTP to HTTPS
+            for (JsonElement jsonElement : productsObject.get("results").getAsJsonArray())
+            {
+                String imageUrlProperty = "image";
+                String httpPrefix = "http://";
+                String httpsPrefix = "https://";
+
+                JsonObject productItemObject = jsonElement.getAsJsonObject();
+                String imageUrl = productItemObject.get(imageUrlProperty).getAsString();
+
+                if (imageUrl.startsWith(httpPrefix))
+                {
+                    imageUrl = imageUrl.replaceFirst(httpPrefix, httpsPrefix);
+                    productItemObject.addProperty(imageUrlProperty, imageUrl);
+                }
+            }
 
             return Response.success(gson.fromJson(productsObject, getClazz()), HttpHeaderParser.parseCacheHeaders(response));
         }
