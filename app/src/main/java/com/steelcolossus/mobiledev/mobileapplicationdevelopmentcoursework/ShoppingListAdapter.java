@@ -1,5 +1,6 @@
 package com.steelcolossus.mobiledev.mobileapplicationdevelopmentcoursework;
 
+import android.app.Activity;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -33,16 +34,18 @@ interface SuggestionButtonsFunction
 
 public class ShoppingListAdapter extends RecyclerViewAdapter<ShoppingListAdapter.ViewHolder, ShoppingListItem>
 {
+    private final Activity activity;
     private final SparseBooleanArray suggestionMap;
     private final boolean isNew;
 
     private ShoppingListItemContextMenuFunction menuFunction;
     private SuggestionButtonsFunction suggestionButtonsFunction;
 
-    ShoppingListAdapter(ArrayList<ShoppingListItem> dataset, boolean isNew)
+    ShoppingListAdapter(Activity activity, ArrayList<ShoppingListItem> dataset, boolean isNew)
     {
         super(dataset);
 
+        this.activity = activity;
         this.isNew = isNew;
 
         suggestionMap = new SparseBooleanArray();
@@ -70,7 +73,7 @@ public class ShoppingListAdapter extends RecyclerViewAdapter<ShoppingListAdapter
         // Create a new view, using the parent's context and the layout of the shopping list item
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_product_item, parent, false);
         // Create a new view holder using the created view
-        return new ViewHolder(v);
+        return new ViewHolder(activity, v);
     }
 
     @Override
@@ -245,13 +248,16 @@ public class ShoppingListAdapter extends RecyclerViewAdapter<ShoppingListAdapter
     // A view holder used to store the elements of the recycler view
     static class ViewHolder extends RecyclerView.ViewHolder
     {
+        private final Activity activity;
         private final ImageView productImageView;
         private final TextView nameTextView;
         private final TextView priceTextView;
 
-        ViewHolder(View itemView)
+        ViewHolder(Activity activity, View itemView)
         {
             super(itemView);
+
+            this.activity = activity;
 
             // Set the different contained views from the base view
             productImageView = itemView.findViewById(R.id.productImageView);
@@ -271,7 +277,7 @@ public class ShoppingListAdapter extends RecyclerViewAdapter<ShoppingListAdapter
 
         void setImage(String url)
         {
-            Glide.with(productImageView.getContext()).load(url).into(productImageView);
+            Glide.with(activity).load(url).into(productImageView);
         }
     }
 }

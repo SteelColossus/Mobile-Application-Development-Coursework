@@ -102,7 +102,7 @@ public class ShoppingListActivity extends AppCompatActivity
         }
 
         // Set up the adapter
-        adapter = new ShoppingListAdapter(shoppingListItems, isNew);
+        adapter = new ShoppingListAdapter(this, shoppingListItems, isNew);
         recyclerView.setAdapter(adapter);
 
         if (isNew)

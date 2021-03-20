@@ -1,5 +1,6 @@
 package com.steelcolossus.mobiledev.mobileapplicationdevelopmentcoursework;
 
+import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,11 +24,15 @@ interface ProductFunction
 
 public class ProductAdapter extends RecyclerViewAdapter<ProductAdapter.ViewHolder, ProductQueryItem>
 {
+    private final Activity activity;
+
     private ProductFunction onClickFunction;
 
-    ProductAdapter(ArrayList<ProductQueryItem> dataset)
+    ProductAdapter(Activity activity, ArrayList<ProductQueryItem> dataset)
     {
         super(dataset);
+
+        this.activity = activity;
     }
 
     @NonNull
@@ -37,7 +42,7 @@ public class ProductAdapter extends RecyclerViewAdapter<ProductAdapter.ViewHolde
         // Create a new view, using the parent's context and the layout of the shopping list item
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_product_item, parent, false);
         // Create a new view holder using the created view
-        return new ProductAdapter.ViewHolder(v);
+        return new ProductAdapter.ViewHolder(activity, v);
     }
 
     @Override
@@ -76,13 +81,16 @@ public class ProductAdapter extends RecyclerViewAdapter<ProductAdapter.ViewHolde
     // A view holder used to store the elements of the recycler view
     static class ViewHolder extends RecyclerView.ViewHolder
     {
+        private final Activity activity;
         private final ImageView productImageView;
         private final TextView nameTextView;
         private final TextView priceTextView;
 
-        ViewHolder(View itemView)
+        ViewHolder(Activity activity, View itemView)
         {
             super(itemView);
+
+            this.activity = activity;
 
             // Set the different contained views from the base view
             productImageView = itemView.findViewById(R.id.productImageView);
@@ -102,7 +110,7 @@ public class ProductAdapter extends RecyclerViewAdapter<ProductAdapter.ViewHolde
 
         void setImage(String url)
         {
-            Glide.with(productImageView.getContext()).load(url).into(productImageView);
+            Glide.with(activity).load(url).into(productImageView);
         }
     }
 }

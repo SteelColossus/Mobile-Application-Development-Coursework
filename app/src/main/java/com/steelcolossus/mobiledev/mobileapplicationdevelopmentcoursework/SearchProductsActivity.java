@@ -72,7 +72,7 @@ public class SearchProductsActivity extends AppCompatActivity
         }
 
         // Set up the adapter
-        productAdapter = new ProductAdapter(dataset);
+        productAdapter = new ProductAdapter(this, dataset);
         productAdapter.setOnClickFunction(new ProductFunction()
         {
             @Override
