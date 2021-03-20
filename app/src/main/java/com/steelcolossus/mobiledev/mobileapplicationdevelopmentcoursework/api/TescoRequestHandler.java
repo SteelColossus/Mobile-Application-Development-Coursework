@@ -21,7 +21,7 @@ public class TescoRequestHandler
         defaultHeaders.put("Ocp-Apim-Subscription-Key", TescoRequestHandler.SUBSCRIPTION_KEY);
     }
 
-    private RequestQueue requestQueue;
+    private final RequestQueue requestQueue;
 
     public TescoRequestHandler(Context context)
     {
