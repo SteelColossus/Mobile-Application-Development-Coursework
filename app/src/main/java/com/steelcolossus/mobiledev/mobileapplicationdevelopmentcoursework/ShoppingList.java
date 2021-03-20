@@ -116,16 +116,19 @@ public class ShoppingList implements Parcelable
     @Override
     public boolean equals(Object obj)
     {
-        if (obj instanceof ShoppingList)
-        {
-            ShoppingList otherShoppingList = (ShoppingList)obj;
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
 
-            return items.equals(otherShoppingList.getItems());
-        }
-        else
-        {
-            return false;
-        }
+        ShoppingList that = (ShoppingList) obj;
+
+        //noinspection EqualsReplaceableByObjectsCall
+        return items != null ? items.equals(that.items) : that.items == null;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return items != null ? items.hashCode() : 0;
     }
 
     public ShoppingList deepCopy()

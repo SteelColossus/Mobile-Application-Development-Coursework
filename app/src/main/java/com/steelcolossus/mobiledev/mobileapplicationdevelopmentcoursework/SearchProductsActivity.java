@@ -189,6 +189,9 @@ public class SearchProductsActivity extends AppCompatActivity
                         {
                             ProductQueryItem testProduct = productQuery.results.get(0);
 
+                            // Set up a default search query so we can change the item later
+                            searchQuery = testProduct.getName();
+
                             if (testProduct.getName().equals(productDataItem.getDescription()))
                             {
                                 returnProductFromActivity(testProduct);

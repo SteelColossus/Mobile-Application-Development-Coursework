@@ -106,16 +106,24 @@ public class ShoppingListItem implements Parcelable
     @Override
     public boolean equals(Object obj)
     {
-        if (obj instanceof ShoppingListItem)
-        {
-            ShoppingListItem otherShoppingListItem = (ShoppingListItem)obj;
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
 
-            return tpnb == otherShoppingListItem.getTpnb() && bought == otherShoppingListItem.isBought() && (searchQuery == null || searchQuery.equals(otherShoppingListItem.getSearchQuery()));
-        }
-        else
-        {
-            return false;
-        }
+        ShoppingListItem that = (ShoppingListItem) obj;
+
+        if (tpnb != that.tpnb) return false;
+        if (bought != that.bought) return false;
+        //noinspection EqualsReplaceableByObjectsCall
+        return searchQuery != null ? searchQuery.equals(that.searchQuery) : that.searchQuery == null;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        int result = tpnb;
+        result = 31 * result + (searchQuery != null ? searchQuery.hashCode() : 0);
+        result = 31 * result + (bought ? 1 : 0);
+        return result;
     }
 
     @Override
